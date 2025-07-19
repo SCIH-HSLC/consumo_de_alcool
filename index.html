@@ -1,9 +1,9 @@
-
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Álcool - Sistema Hospitalar</title>
+    <title>Controle de Higiene Hospitalar</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
@@ -33,7 +33,7 @@
             color: #333;
             line-height: 1.6;
             min-height: 100vh;
-            padding-bottom: 40px;
+            padding-bottom: 80px;
         }
         
         .container {
@@ -45,10 +45,10 @@
         header {
             background: linear-gradient(135deg, var(--primary), var(--hospital-blue));
             color: white;
-            padding: 20px 0;
+            padding: 15px 0;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             border-radius: 0 0 15px 15px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -64,68 +64,64 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
+            flex: 1;
         }
         
         .logo i {
-            font-size: 2.5rem;
+            font-size: 2rem;
             background: rgba(255, 255, 255, 0.2);
-            padding: 12px;
+            padding: 10px;
             border-radius: 50%;
         }
         
         .logo h1 {
-            font-size: 1.8rem;
+            font-size: 1.4rem;
             font-weight: 600;
             letter-spacing: 0.5px;
         }
         
         .date-display {
             background: rgba(255, 255, 255, 0.15);
-            padding: 8px 15px;
+            padding: 6px 12px;
             border-radius: 20px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            margin-top: 5px;
         }
         
         .main-grid {
             display: grid;
             grid-template-columns: 1fr 2fr;
-            gap: 25px;
-        }
-        
-        @media (max-width: 900px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
+            gap: 20px;
         }
         
         .card {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-            padding: 25px;
-            margin-bottom: 25px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            margin-bottom: 20px;
             transition: transform 0.3s ease;
             border: 1px solid rgba(52, 152, 219, 0.1);
         }
         
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
         }
         
         .card-title {
             color: var(--primary);
-            margin-bottom: 20px;
-            padding-bottom: 12px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
             border-bottom: 2px solid var(--hospital-blue);
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         
         .card-title i {
@@ -133,22 +129,23 @@
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 600;
             color: var(--dark);
+            font-size: 0.95rem;
         }
         
         select, input {
             width: 100%;
-            padding: 14px 18px;
+            padding: 12px 15px;
             border: 2px solid #d6eaf8;
-            border-radius: 10px;
-            font-size: 1rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
             transition: all 0.3s;
             background: #f8fbfd;
         }
@@ -156,30 +153,30 @@
         select:focus, input:focus {
             border-color: var(--hospital-blue);
             outline: none;
-            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
             background: white;
         }
         
         .btn {
             display: inline-block;
-            padding: 14px 28px;
+            padding: 12px 20px;
             background: var(--hospital-green);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: 600;
             transition: all 0.3s ease;
             width: 100%;
             text-align: center;
-            box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
+            box-shadow: 0 3px 8px rgba(46, 204, 113, 0.3);
         }
         
         .btn:hover {
             background: #27ae60;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(39, 174, 96, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(39, 174, 96, 0.4);
         }
         
         .btn:active {
@@ -187,38 +184,49 @@
         }
         
         .btn i {
-            margin-right: 8px;
+            margin-right: 6px;
         }
         
         .btn-clear {
             background: var(--warning);
-            box-shadow: 0 4px 10px rgba(243, 156, 18, 0.3);
-            margin-top: 10px;
+            box-shadow: 0 3px 8px rgba(243, 156, 18, 0.3);
+            margin-top: 8px;
         }
         
         .btn-clear:hover {
             background: #e67e22;
-            box-shadow: 0 6px 15px rgba(230, 126, 34, 0.4);
+            box-shadow: 0 5px 12px rgba(230, 126, 34, 0.4);
         }
         
         .btn-export {
             background: var(--hospital-blue);
-            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+            box-shadow: 0 3px 8px rgba(52, 152, 219, 0.3);
         }
         
         .btn-export:hover {
             background: #2980b9;
-            box-shadow: 0 6px 15px rgba(41, 128, 185, 0.4);
+            box-shadow: 0 5px 12px rgba(41, 128, 185, 0.4);
         }
         
-        /* Área da tabela corrigida */
+        .btn-clear-all {
+            background: var(--danger);
+            box-shadow: 0 3px 8px rgba(231, 76, 60, 0.3);
+            margin-top: 15px;
+        }
+        
+        .btn-clear-all:hover {
+            background: #c0392b;
+            box-shadow: 0 5px 12px rgba(192, 57, 43, 0.4);
+        }
+        
+        /* Área da tabela */
         .table-container {
             overflow-x: auto;
-            max-height: 600px;
+            max-height: 500px;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             background: white;
-            margin-top: 15px;
+            margin-top: 10px;
         }
         
         #records-table {
@@ -229,10 +237,11 @@
         
         #records-table th, 
         #records-table td {
-            padding: 16px 18px;
+            padding: 14px 15px;
             text-align: left;
             border-bottom: 1px solid #e3f2fd;
             vertical-align: top;
+            font-size: 0.9rem;
         }
         
         #records-table th {
@@ -253,26 +262,26 @@
         
         /* Células com quebra de palavras */
         .product-cell {
-            max-width: 250px;
+            max-width: 200px;
             word-wrap: break-word;
         }
         
         .sector-cell {
-            max-width: 250px;
+            max-width: 200px;
             word-wrap: break-word;
         }
         
         .action-cell {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
         
         .btn-action {
-            padding: 8px 12px;
-            border-radius: 8px;
+            padding: 7px 10px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             border: none;
             transition: all 0.2s;
             white-space: nowrap;
@@ -294,28 +303,29 @@
         
         footer {
             text-align: center;
-            margin-top: 40px;
-            padding: 20px;
+            margin-top: 30px;
+            padding: 15px;
             color: var(--gray);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             border-top: 1px solid #d6eaf8;
         }
         
         .notification {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 16px 26px;
-            border-radius: 10px;
+            top: 15px;
+            right: 15px;
+            padding: 14px 20px;
+            border-radius: 8px;
             color: white;
             font-weight: 500;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
             transform: translateX(200%);
             transition: transform 0.4s ease;
             z-index: 1000;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            max-width: calc(100% - 30px);
         }
         
         .notification.show {
@@ -334,75 +344,76 @@
             display: inline-block;
             background: var(--hospital-blue);
             color: white;
-            padding: 4px 10px;
-            border-radius: 15px;
-            font-size: 0.85rem;
-            margin-left: 8px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 6px;
             font-weight: bold;
         }
         
         .summary-card {
             background: linear-gradient(135deg, #e3f2fd, #d0e5f7);
             border-left: 4px solid var(--hospital-blue);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
         }
         
         .summary-card h3 {
             color: var(--primary);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            font-size: 1rem;
         }
         
         .summary-card p {
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             color: var(--dark);
         }
         
         .summary-card .value {
             color: var(--hospital-blue);
-            font-size: 1.4rem;
+            font-size: 1.2rem;
         }
         
         .hospital-icon {
             color: var(--hospital-blue);
-            margin-right: 8px;
+            margin-right: 6px;
         }
         
         .empty-state {
             text-align: center;
-            padding: 40px 20px;
+            padding: 30px 15px;
             color: var(--gray);
             display: none;
         }
         
         .empty-state i {
-            font-size: 4rem;
+            font-size: 3rem;
             opacity: 0.2;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         
         .empty-state p {
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
         
         .section-title {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 15px;
             color: var(--primary);
-            padding-bottom: 10px;
+            padding-bottom: 8px;
             border-bottom: 2px solid rgba(52, 152, 219, 0.2);
         }
         
         /* Menu Mobile */
         .mobile-tabs {
-            display: none;
+            display: flex;
             background: white;
             position: fixed;
             bottom: 0;
@@ -415,44 +426,42 @@
         .mobile-tab {
             flex: 1;
             text-align: center;
-            padding: 12px;
+            padding: 10px 5px;
             color: var(--dark);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             border-top: 3px solid transparent;
+            transition: all 0.3s;
         }
         
         .mobile-tab.active {
             border-top-color: var(--hospital-blue);
             color: var(--hospital-blue);
             font-weight: bold;
+            background: rgba(52, 152, 219, 0.05);
         }
         
         .mobile-tab i {
             display: block;
-            font-size: 1.2rem;
-            margin-bottom: 5px;
+            font-size: 1.1rem;
+            margin-bottom: 3px;
         }
         
         /* Responsividade */
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
             .main-grid {
                 grid-template-columns: 1fr;
             }
             
             .logo h1 {
-                font-size: 1.4rem;
+                font-size: 1.2rem;
             }
             
             .date-display {
-                font-size: 0.8rem;
+                font-size: 0.75rem;
             }
             
-            .action-cell {
-                flex-direction: column;
-            }
-            
-            .btn-action {
-                width: 100%;
+            .card-title {
+                font-size: 1.2rem;
             }
             
             .mobile-tabs {
@@ -465,7 +474,59 @@
             
             #records-table th, 
             #records-table td {
-                padding: 12px 10px;
+                padding: 10px 8px;
+                font-size: 0.85rem;
+            }
+            
+            .action-cell {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .btn-action {
+                font-size: 0.8rem;
+                padding: 5px 8px;
+            }
+            
+            .btn {
+                padding: 10px 15px;
+                font-size: 0.95rem;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: row;
+                align-items: center;
+                gap: 5px;
+            }
+            
+            .date-display {
+                margin-top: 0;
+            }
+            
+            .logo h1 {
+                font-size: 1.1rem;
+            }
+            
+            .card-title {
+                font-size: 1.1rem;
+            }
+            
+            .btn {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .section-title h2 {
+                font-size: 1.1rem;
+            }
+            
+            .summary-card p {
                 font-size: 0.9rem;
             }
         }
@@ -474,23 +535,46 @@
             .header-content {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 10px;
+                gap: 5px;
+            }
+            
+            .logo {
+                width: 100%;
             }
             
             .date-display {
-                margin-top: 5px;
+                width: 100%;
+                justify-content: center;
             }
             
-            .logo h1 {
-                font-size: 1.3rem;
+            .mobile-tab {
+                padding: 8px 3px;
+                font-size: 0.7rem;
+            }
+            
+            .mobile-tab i {
+                font-size: 1rem;
             }
             
             .card-title {
-                font-size: 1.2rem;
+                font-size: 1rem;
             }
             
             .btn {
-                padding: 12px 20px;
+                padding: 9px;
+                font-size: 0.85rem;
+            }
+            
+            .form-group {
+                margin-bottom: 12px;
+            }
+            
+            select, input {
+                padding: 10px 12px;
+                font-size: 0.9rem;
+            }
+            
+            .section-title h2 {
                 font-size: 1rem;
             }
         }
@@ -514,9 +598,9 @@
     
     <div class="container">
         <div class="main-grid">
-            <div class="left-column">
+            <div class="left-column" id="form-section">
                 <div class="card">
-                    <h2 class="card-title"><i class="fas fa-calculator"></i> Contador de Álcool</h2>
+                    <h2 class="card-title"><i class="fas fa-calculator"></i> Controle de Produtos</h2>
                     
                     <div class="form-group">
                         <label for="product"><i class="fas fa-pump-soap hospital-icon"></i> Produto:</label>
@@ -528,7 +612,7 @@
                             <option value="ÁLCOOL PUMP (250 ml)">ÁLCOOL PUMP (250 ml)</option>
                             <option value="ÁLCOOL ESPUMA (1000 ml)">ÁLCOOL ESPUMA (1000 ml)</option>
                             <option value="ÁLCOOL PURELL (1200 ml)">ÁLCOOL PURELL (1200 ml)</option>
-                            <option value="ÁLCOOL ESPUMA (420 ml)">ÁLCOOL ESPUMA (475 ml)</option>
+                            <option value="ÁLCOOL ESPUMA (475 ml)">ÁLCOOL ESPUMA (475 ml)</option>
                         </select>
                     </div>
                     
@@ -568,7 +652,7 @@
                     </div>
                 </div>
                 
-                <div class="card">
+                <div class="card" id="summary-section">
                     <h2 class="card-title"><i class="fas fa-chart-pie"></i> Resumo</h2>
                     
                     <div class="summary-card">
@@ -593,14 +677,18 @@
                     <button id="export-btn" class="btn btn-export">
                         <i class="fas fa-file-excel"></i> Exportar para Excel
                     </button>
+                    
+                    <button id="clear-all-btn" class="btn btn-clear-all">
+                        <i class="fas fa-trash-alt"></i> Limpar Todos os Registros
+                    </button>
                 </div>
             </div>
             
-            <div class="right-column">
+            <div class="right-column" id="history-section">
                 <div class="card">
                     <div class="section-title">
                         <i class="fas fa-list"></i>
-                        <h2>Registros de Consumo</h2>
+                        <h2>Histórico de Registros</h2>
                         <span id="records-count" class="counter-badge">0</span>
                     </div>
                     
@@ -649,8 +737,8 @@
     
     <footer>
         <div class="container">
-            <p>Sistema de Controle de Produtos de Higiene &copy; 2025 - Desenvolvido para o Hospital</p>
-            <p>Planilha de destino: <a target="_blank">Acessar Planilha</a></p>
+            <p>Sistema de Controle de Produtos de Higiene &copy; 2023 - Desenvolvido para o Hospital</p>
+            <p>Dados armazenados localmente no seu dispositivo</p>
         </div>
     </footer>
     
@@ -660,6 +748,9 @@
     </div>
 
     <script>
+        // Armazenamento de dados no localStorage
+        const STORAGE_KEY = 'hospital_hygiene_records';
+        
         // Atualizar data atual
         function updateCurrentDate() {
             const now = new Date();
@@ -669,15 +760,24 @@
                 month: 'long', 
                 day: 'numeric',
                 hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
+                minute: '2-digit'
             };
             document.getElementById('current-date').textContent = 
                 now.toLocaleDateString('pt-BR', options);
         }
         
-        // Armazenamento de dados no localStorage
-        let records = JSON.parse(localStorage.getItem('alcoholRecords')) || [];
+        // Carregar registros do localStorage
+        function loadRecords() {
+            const recordsData = localStorage.getItem(STORAGE_KEY);
+            return recordsData ? JSON.parse(recordsData) : [];
+        }
+        
+        // Salvar registros no localStorage
+        function saveRecords(records) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+        }
+        
+        let records = loadRecords();
         
         // Função para mostrar notificação
         function showNotification(message, type) {
@@ -690,11 +790,6 @@
             }, 3000);
         }
         
-        // Função para salvar registros no localStorage
-        function saveRecords() {
-            localStorage.setItem('alcoholRecords', JSON.stringify(records));
-        }
-        
         // Função para adicionar novo registro
         function addRecord(product, sector, quantity) {
             const now = new Date();
@@ -705,11 +800,12 @@
                 product: product,
                 sector: sector,
                 quantity: parseInt(quantity),
-                date: dateStr
+                date: dateStr,
+                device: isMobile() ? 'Mobile' : 'Desktop'
             };
             
             records.unshift(newRecord);
-            saveRecords();
+            saveRecords(records);
             updateRecordsTable();
             updateSummary();
             
@@ -827,9 +923,12 @@
                 
                 // Remover o registro antigo
                 records = records.filter(r => r.id !== id);
-                saveRecords();
+                saveRecords(records);
                 updateRecordsTable();
                 updateSummary();
+                
+                // Ativar a aba de formulário no mobile
+                activateMobileTab('form');
                 
                 showNotification('Registro carregado para edição', 'success');
             }
@@ -839,7 +938,7 @@
         function deleteRecord(id) {
             if (confirm('Tem certeza que deseja excluir este registro?')) {
                 records = records.filter(r => r.id !== id);
-                saveRecords();
+                saveRecords(records);
                 updateRecordsTable();
                 updateSummary();
                 showNotification('Registro excluído com sucesso', 'success');
@@ -853,6 +952,17 @@
             document.getElementById('quantity').value = '1';
         }
         
+        // Função para limpar todos os registros
+        function clearAllRecords() {
+            if (confirm('Tem certeza que deseja limpar TODOS os registros? Esta ação não pode ser desfeita.')) {
+                records = [];
+                saveRecords(records);
+                updateRecordsTable();
+                updateSummary();
+                showNotification('Todos os registros foram removidos', 'success');
+            }
+        }
+        
         // Função para exportar dados para Excel (XLSX)
         function exportToExcel() {
             if (records.length === 0) {
@@ -862,7 +972,7 @@
             
             // Preparar os dados para a planilha
             const data = [
-                ['Produto', 'Setor', 'Quantidade', 'Data e Hora'] // Cabeçalhos
+                ['Produto', 'Setor', 'Quantidade', 'Data e Hora', 'Dispositivo'] // Cabeçalhos
             ];
             
             // Adicionar os registros
@@ -871,7 +981,8 @@
                     record.product,
                     record.sector,
                     record.quantity,
-                    record.date
+                    record.date,
+                    record.device
                 ]);
             });
             
@@ -879,17 +990,14 @@
             const ws = XLSX.utils.aoa_to_sheet(data);
             
             // Estilizar o cabeçalho
-            if (ws['A1']) {
-                ws['A1'].s = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1A5276" } } };
-            }
-            if (ws['B1']) {
-                ws['B1'].s = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1A5276" } } };
-            }
-            if (ws['C1']) {
-                ws['C1'].s = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1A5276" } } };
-            }
-            if (ws['D1']) {
-                ws['D1'].s = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1A5276" } } };
+            for (let i = 0; i < 5; i++) {
+                const cell = XLSX.utils.encode_cell({c: i, r: 0});
+                if (ws[cell]) {
+                    ws[cell].s = { 
+                        font: { bold: true, color: { rgb: "FFFFFF" } }, 
+                        fill: { fgColor: { rgb: "1A5276" } } 
+                    };
+                }
             }
             
             // Ajustar largura das colunas
@@ -897,7 +1005,8 @@
                 { wch: 30 }, // Produto
                 { wch: 30 }, // Setor
                 { wch: 12 }, // Quantidade
-                { wch: 20 }  // Data
+                { wch: 20 }, // Data
+                { wch: 10 }  // Dispositivo
             ];
             ws['!cols'] = colWidths;
             
@@ -906,10 +1015,43 @@
             XLSX.utils.book_append_sheet(wb, ws, "Registros de Consumo");
             
             // Gerar o arquivo XLSX
-            const fileName = `controle_alcool_${new Date().toISOString().slice(0, 10)}.xlsx`;
+            const fileName = `controle_higiene_${new Date().toISOString().slice(0, 10)}.xlsx`;
             XLSX.writeFile(wb, fileName);
             
             showNotification('Planilha exportada com sucesso!', 'success');
+        }
+        
+        // Função para ativar aba mobile
+        function activateMobileTab(tabName) {
+            // Atualizar aba ativa
+            document.querySelectorAll('.mobile-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.getAttribute('data-tab') === tabName) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            // Mostrar seção correspondente
+            if (tabName === 'form') {
+                document.getElementById('form-section').style.display = 'block';
+                document.getElementById('history-section').style.display = 'none';
+                document.getElementById('summary-section').style.display = 'block';
+            } 
+            else if (tabName === 'history') {
+                document.getElementById('form-section').style.display = 'none';
+                document.getElementById('history-section').style.display = 'block';
+                document.getElementById('summary-section').style.display = 'none';
+            }
+            else if (tabName === 'summary') {
+                document.getElementById('form-section').style.display = 'none';
+                document.getElementById('history-section').style.display = 'none';
+                document.getElementById('summary-section').style.display = 'block';
+            }
+        }
+        
+        // Verificar se é dispositivo móvel
+        function isMobile() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         }
         
         // Inicialização
@@ -956,36 +1098,26 @@
             // Configurar botão de exportar
             document.getElementById('export-btn').addEventListener('click', exportToExcel);
             
+            // Configurar botão de limpar todos
+            document.getElementById('clear-all-btn').addEventListener('click', clearAllRecords);
+            
             // Configurar abas mobile
             document.querySelectorAll('.mobile-tab').forEach(tab => {
                 tab.addEventListener('click', function() {
-                    // Atualizar aba ativa
-                    document.querySelectorAll('.mobile-tab').forEach(t => {
-                        t.classList.remove('active');
-                    });
-                    this.classList.add('active');
-                    
-                    // Mostrar seção correspondente
                     const tabName = this.getAttribute('data-tab');
-                    
-                    if (tabName === 'form') {
-                        document.querySelector('.left-column').style.display = 'block';
-                        document.querySelector('.right-column').style.display = 'none';
-                    } 
-                    else if (tabName === 'history') {
-                        document.querySelector('.left-column').style.display = 'none';
-                        document.querySelector('.right-column').style.display = 'block';
-                    }
-                    else if (tabName === 'summary') {
-                        document.querySelector('.left-column').style.display = 'block';
-                        document.querySelector('.right-column').style.display = 'none';
-                    }
+                    activateMobileTab(tabName);
                 });
             });
             
             // Inicializar para mobile
-            if (window.innerWidth < 768) {
-                document.querySelector('.right-column').style.display = 'none';
+            if (window.innerWidth < 900) {
+                activateMobileTab('form');
+            }
+            
+            // Mostrar mensagem de armazenamento
+            if (records.length > 0) {
+                const deviceType = isMobile() ? 'celular' : 'computador';
+                showNotification(`Dados carregados do armazenamento local (${records.length} registros)`, 'success');
             }
         });
     </script>
