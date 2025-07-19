@@ -1,0 +1,993 @@
+
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Álcool - Sistema Hospitalar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary: #1a5276;
+            --secondary: #2980b9;
+            --accent: #16a085;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --gray: #95a5a6;
+            --hospital-blue: #3498db;
+            --hospital-green: #2ecc71;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #e8f4f8, #d1e7f0);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--hospital-blue));
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 15px 15px;
+            margin-bottom: 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo i {
+            font-size: 2.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 12px;
+            border-radius: 50%;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .date-display {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 25px;
+        }
+        
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(52, 152, 219, 0.1);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+        
+        .card-title {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--hospital-blue);
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title i {
+            color: var(--hospital-blue);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #d6eaf8;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: #f8fbfd;
+        }
+        
+        select:focus, input:focus {
+            border-color: var(--hospital-blue);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15);
+            background: white;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            background: var(--hospital-green);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.05rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
+        }
+        
+        .btn:hover {
+            background: #27ae60;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(39, 174, 96, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn-clear {
+            background: var(--warning);
+            box-shadow: 0 4px 10px rgba(243, 156, 18, 0.3);
+            margin-top: 10px;
+        }
+        
+        .btn-clear:hover {
+            background: #e67e22;
+            box-shadow: 0 6px 15px rgba(230, 126, 34, 0.4);
+        }
+        
+        .btn-export {
+            background: var(--hospital-blue);
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-export:hover {
+            background: #2980b9;
+            box-shadow: 0 6px 15px rgba(41, 128, 185, 0.4);
+        }
+        
+        /* Área da tabela corrigida */
+        .table-container {
+            overflow-x: auto;
+            max-height: 600px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            background: white;
+            margin-top: 15px;
+        }
+        
+        #records-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+        
+        #records-table th, 
+        #records-table td {
+            padding: 16px 18px;
+            text-align: left;
+            border-bottom: 1px solid #e3f2fd;
+            vertical-align: top;
+        }
+        
+        #records-table th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        
+        #records-table tr:nth-child(even) {
+            background-color: #f5fafd;
+        }
+        
+        #records-table tr:hover {
+            background-color: #ebf5fb;
+        }
+        
+        /* Células com quebra de palavras */
+        .product-cell {
+            max-width: 250px;
+            word-wrap: break-word;
+        }
+        
+        .sector-cell {
+            max-width: 250px;
+            word-wrap: break-word;
+        }
+        
+        .action-cell {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-action {
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            border: none;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .btn-action:hover {
+            transform: scale(1.05);
+        }
+        
+        .btn-edit {
+            background: var(--hospital-blue);
+            color: white;
+        }
+        
+        .btn-delete {
+            background: var(--danger);
+            color: white;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
+            border-top: 1px solid #d6eaf8;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 26px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            transform: translateX(200%);
+            transition: transform 0.4s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: var(--hospital-green);
+        }
+        
+        .notification.error {
+            background: var(--danger);
+        }
+        
+        .counter-badge {
+            display: inline-block;
+            background: var(--hospital-blue);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            margin-left: 8px;
+            font-weight: bold;
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, #e3f2fd, #d0e5f7);
+            border-left: 4px solid var(--hospital-blue);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .summary-card h3 {
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .summary-card p {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .summary-card .value {
+            color: var(--hospital-blue);
+            font-size: 1.4rem;
+        }
+        
+        .hospital-icon {
+            color: var(--hospital-blue);
+            margin-right: 8px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+            display: none;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            opacity: 0.2;
+            margin-bottom: 15px;
+        }
+        
+        .empty-state p {
+            font-size: 1.1rem;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: var(--primary);
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(52, 152, 219, 0.2);
+        }
+        
+        /* Menu Mobile */
+        .mobile-tabs {
+            display: none;
+            background: white;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 90;
+            box-shadow: 0 -3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .mobile-tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            color: var(--dark);
+            font-size: 0.8rem;
+            border-top: 3px solid transparent;
+        }
+        
+        .mobile-tab.active {
+            border-top-color: var(--hospital-blue);
+            color: var(--hospital-blue);
+            font-weight: bold;
+        }
+        
+        .mobile-tab i {
+            display: block;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .logo h1 {
+                font-size: 1.4rem;
+            }
+            
+            .date-display {
+                font-size: 0.8rem;
+            }
+            
+            .action-cell {
+                flex-direction: column;
+            }
+            
+            .btn-action {
+                width: 100%;
+            }
+            
+            .mobile-tabs {
+                display: flex;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            #records-table th, 
+            #records-table td {
+                padding: 12px 10px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .date-display {
+                margin-top: 5px;
+            }
+            
+            .logo h1 {
+                font-size: 1.3rem;
+            }
+            
+            .card-title {
+                font-size: 1.2rem;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-hospital-alt"></i>
+                    <h1>Controle de Produtos de Higiene</h1>
+                </div>
+                <div class="date-display">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="current-date">Carregando data...</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="main-grid">
+            <div class="left-column">
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-calculator"></i> Contador de Álcool</h2>
+                    
+                    <div class="form-group">
+                        <label for="product"><i class="fas fa-pump-soap hospital-icon"></i> Produto:</label>
+                        <select id="product">
+                            <option value="">Selecione um produto</option>
+                            <option value="SABONETE LÍQUIDO (500 ml)">SABONETE LÍQUIDO (500 ml)</option>
+                            <option value="SABONETE LIQUIDO CLOREX (1000ML)">SABONETE LIQUIDO CLOREX (1000ML)</option>
+                            <option value="ÁLCOOL EM GEL (700 ml)">ÁLCOOL EM GEL (700 ml)</option>
+                            <option value="ÁLCOOL PUMP (250 ml)">ÁLCOOL PUMP (250 ml)</option>
+                            <option value="ÁLCOOL ESPUMA (1000 ml)">ÁLCOOL ESPUMA (1000 ml)</option>
+                            <option value="ÁLCOOL PURELL (1200 ml)">ÁLCOOL PURELL (1200 ml)</option>
+                            <option value="ÁLCOOL ESPUMA (420 ml)">ÁLCOOL ESPUMA (475 ml)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sector"><i class="fas fa-building hospital-icon"></i> Setor:</label>
+                        <select id="sector">
+                            <option value="">Selecione um setor</option>
+                            <option value="7º ANDAR - INTERNAÇÃO">7º ANDAR - INTERNAÇÃO</option>
+                            <option value="6º ANDAR - INTERNAÇÃO">6º ANDAR - INTERNAÇÃO</option>
+                            <option value="6º ANDAR - MATERNIDADE">6º ANDAR - MATERNIDADE</option>
+                            <option value="5º ANDAR - INTERNAÇÃO">5º ANDAR - INTERNAÇÃO</option>
+                            <option value="5º ANDAR - ONCOLOGIA">5º ANDAR - ONCOLOGIA</option>
+                            <option value="4º ANDAR - CEMED">4º ANDAR - CEMED</option>
+                            <option value="3º ANDAR - PEDIATRIA INTERNAÇÃO">3º ANDAR - PEDIATRIA INTERNAÇÃO</option>
+                            <option value="3º ANDAR - UTI PEDIATRICA">3º ANDAR - UTI PEDIATRICA</option>
+                            <option value="3º ANDAR - UTI NEONATAL">3º ANDAR - UTI NEONATAL</option>
+                            <option value="2º ANDAR CENTRO CIRURGICO">2º ANDAR CENTRO CIRURGICO</option>
+                            <option value="2º ANDAR CENTRO OBSTÉTRICO">2º ANDAR CENTRO OBSTÉTRICO</option>
+                            <option value="2º ANDAR - HOSPITAL DIA">2º ANDAR - HOSPITAL DIA</option>
+                            <option value="1º ANDAR ADULTO DML 01 – UTI">1º ANDAR ADULTO DML 01 – UTI</option>
+                            <option value="TÉRREO DML SADT">TÉRREO DML SADT</option>
+                            <option value="TÉRREO DML PSA">TÉRREO DML PSA</option>
+                            <option value="TÉRREO DML PSI">TÉRREO DML PSI</option>
+                            <option value="S1 DML 1 - MEDICINA DO TRABALHO">S1 DML 1 - MEDICINA DO TRABALHO</option>
+                            <option value="S1 DML 2 - MANUTENÇÃO">S1 DML 2 - MANUTENÇÃO</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="quantity"><i class="fas fa-cubes hospital-icon"></i> Quantidade:</label>
+                        <input type="number" id="quantity" min="1" value="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <button id="save-btn" class="btn"><i class="fas fa-save"></i> Salvar Registro</button>
+                        <button id="clear-btn" class="btn btn-clear"><i class="fas fa-broom"></i> Limpar Formulário</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-chart-pie"></i> Resumo</h2>
+                    
+                    <div class="summary-card">
+                        <h3><i class="fas fa-database"></i> Total de Registros</h3>
+                        <p><span id="total-records" class="value">0</span></p>
+                    </div>
+                    
+                    <div class="summary-card">
+                        <h3><i class="fas fa-syringe"></i> Produtos Mais Utilizados</h3>
+                        <div id="product-summary">
+                            <p>Nenhum registro ainda</p>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-card">
+                        <h3><i class="fas fa-map-marker-alt"></i> Setores com Mais Consumo</h3>
+                        <div id="sector-summary">
+                            <p>Nenhum registro ainda</p>
+                        </div>
+                    </div>
+                    
+                    <button id="export-btn" class="btn btn-export">
+                        <i class="fas fa-file-excel"></i> Exportar para Excel
+                    </button>
+                </div>
+            </div>
+            
+            <div class="right-column">
+                <div class="card">
+                    <div class="section-title">
+                        <i class="fas fa-list"></i>
+                        <h2>Registros de Consumo</h2>
+                        <span id="records-count" class="counter-badge">0</span>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table id="records-table">
+                            <thead>
+                                <tr>
+                                    <th>Produto</th>
+                                    <th>Setor</th>
+                                    <th>Quantidade</th>
+                                    <th>Data</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="records-body">
+                                <!-- Dados serão inseridos aqui via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="empty-state" class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>Nenhum registro encontrado</p>
+                        <p>Adicione registros usando o formulário ao lado</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Menu Mobile -->
+    <div class="mobile-tabs">
+        <div class="mobile-tab active" data-tab="form">
+            <i class="fas fa-plus-circle"></i>
+            <span>Novo Registro</span>
+        </div>
+        <div class="mobile-tab" data-tab="history">
+            <i class="fas fa-history"></i>
+            <span>Histórico</span>
+        </div>
+        <div class="mobile-tab" data-tab="summary">
+            <i class="fas fa-chart-pie"></i>
+            <span>Resumo</span>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>Sistema de Controle de Produtos de Higiene &copy; 2025 - Desenvolvido para o Hospital</p>
+            <p>Planilha de destino: <a target="_blank">Acessar Planilha</a></p>
+        </div>
+    </footer>
+    
+    <div id="notification" class="notification">
+        <i class="fas fa-info-circle"></i>
+        <span>Mensagem de notificação</span>
+    </div>
+
+    <script>
+        // Atualizar data atual
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            document.getElementById('current-date').textContent = 
+                now.toLocaleDateString('pt-BR', options);
+        }
+        
+        // Armazenamento de dados no localStorage
+        let records = JSON.parse(localStorage.getItem('alcoholRecords')) || [];
+        
+        // Função para mostrar notificação
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.querySelector('span').textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Função para salvar registros no localStorage
+        function saveRecords() {
+            localStorage.setItem('alcoholRecords', JSON.stringify(records));
+        }
+        
+        // Função para adicionar novo registro
+        function addRecord(product, sector, quantity) {
+            const now = new Date();
+            const dateStr = now.toLocaleString('pt-BR');
+            
+            const newRecord = {
+                id: Date.now(),
+                product: product,
+                sector: sector,
+                quantity: parseInt(quantity),
+                date: dateStr
+            };
+            
+            records.unshift(newRecord);
+            saveRecords();
+            updateRecordsTable();
+            updateSummary();
+            
+            showNotification('Registro salvo com sucesso!', 'success');
+        }
+        
+        // Função para atualizar a tabela de registros
+        function updateRecordsTable() {
+            const tbody = document.getElementById('records-body');
+            const counter = document.getElementById('records-count');
+            const emptyState = document.getElementById('empty-state');
+            
+            if (records.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                counter.textContent = '0';
+                document.getElementById('total-records').textContent = '0';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            let html = '';
+            records.forEach(record => {
+                html += `
+                    <tr>
+                        <td class="product-cell">${record.product}</td>
+                        <td class="sector-cell">${record.sector}</td>
+                        <td>${record.quantity}</td>
+                        <td>${record.date}</td>
+                        <td class="action-cell">
+                            <button class="btn-action btn-edit" onclick="editRecord(${record.id})">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="btn-action btn-delete" onclick="deleteRecord(${record.id})">
+                                <i class="fas fa-trash-alt"></i> Excluir
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+            counter.textContent = records.length;
+            document.getElementById('total-records').textContent = records.length;
+        }
+        
+        // Função para atualizar o resumo
+        function updateSummary() {
+            const productSummary = document.getElementById('product-summary');
+            const sectorSummary = document.getElementById('sector-summary');
+            
+            if (records.length === 0) {
+                productSummary.innerHTML = '<p>Nenhum registro ainda</p>';
+                sectorSummary.innerHTML = '<p>Nenhum registro ainda</p>';
+                return;
+            }
+            
+            // Calcular resumo de produtos
+            const productCount = {};
+            records.forEach(record => {
+                if (!productCount[record.product]) {
+                    productCount[record.product] = 0;
+                }
+                productCount[record.product] += record.quantity;
+            });
+            
+            // Converter para array e ordenar
+            const productArray = Object.entries(productCount)
+                .map(([product, count]) => ({ product, count }))
+                .sort((a, b) => b.count - a.count);
+            
+            // Gerar HTML para produtos
+            let productHtml = '';
+            const topProducts = productArray.slice(0, 3);
+            
+            topProducts.forEach(item => {
+                productHtml += `<p>${item.product}: <span class="value">${item.count}</span></p>`;
+            });
+            
+            productSummary.innerHTML = productHtml;
+            
+            // Calcular resumo de setores
+            const sectorCount = {};
+            records.forEach(record => {
+                if (!sectorCount[record.sector]) {
+                    sectorCount[record.sector] = 0;
+                }
+                sectorCount[record.sector] += record.quantity;
+            });
+            
+            // Converter para array e ordenar
+            const sectorArray = Object.entries(sectorCount)
+                .map(([sector, count]) => ({ sector, count }))
+                .sort((a, b) => b.count - a.count);
+            
+            // Gerar HTML para setores
+            let sectorHtml = '';
+            const topSectors = sectorArray.slice(0, 3);
+            
+            topSectors.forEach(item => {
+                sectorHtml += `<p>${item.sector}: <span class="value">${item.count}</span></p>`;
+            });
+            
+            sectorSummary.innerHTML = sectorHtml;
+        }
+        
+        // Função para editar registro
+        function editRecord(id) {
+            const record = records.find(r => r.id === id);
+            if (record) {
+                document.getElementById('product').value = record.product;
+                document.getElementById('sector').value = record.sector;
+                document.getElementById('quantity').value = record.quantity;
+                
+                // Remover o registro antigo
+                records = records.filter(r => r.id !== id);
+                saveRecords();
+                updateRecordsTable();
+                updateSummary();
+                
+                showNotification('Registro carregado para edição', 'success');
+            }
+        }
+        
+        // Função para excluir registro
+        function deleteRecord(id) {
+            if (confirm('Tem certeza que deseja excluir este registro?')) {
+                records = records.filter(r => r.id !== id);
+                saveRecords();
+                updateRecordsTable();
+                updateSummary();
+                showNotification('Registro excluído com sucesso', 'success');
+            }
+        }
+        
+        // Função para limpar formulário
+        function clearForm() {
+            document.getElementById('product').value = '';
+            document.getElementById('sector').value = '';
+            document.getElementById('quantity').value = '1';
+        }
+        
+        // Função para exportar dados para Excel (XLSX)
+        function exportToExcel() {
+            if (records.length === 0) {
+                showNotification('Nenhum dado para exportar', 'error');
+                return;
+            }
+            
+            // Preparar os dados para a planilha
+            const data = [
+                ['Produto', 'Setor', 'Quantidade', 'Data e Hora'] // Cabeçalhos
+            ];
+            
+            // Adicionar os registros
+            records.forEach(record => {
+                data.push([
+                    record.product,
+                    record.sector,
+                    record.quantity,
+                    record.date
+                ]);
+            });
+            
+            // Criar uma planilha
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            
+            // Estilizar o cabeçalho
+            if (ws['A1']) {
+                ws['A1'].s = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1A5276" } } };
+            }
+            if (ws['B1']) {
+                ws['B1'].s = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1A5276" } } };
+            }
+            if (ws['C1']) {
+                ws['C1'].s = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1A5276" } } };
+            }
+            if (ws['D1']) {
+                ws['D1'].s = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1A5276" } } };
+            }
+            
+            // Ajustar largura das colunas
+            const colWidths = [
+                { wch: 30 }, // Produto
+                { wch: 30 }, // Setor
+                { wch: 12 }, // Quantidade
+                { wch: 20 }  // Data
+            ];
+            ws['!cols'] = colWidths;
+            
+            // Criar uma pasta de trabalho
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Registros de Consumo");
+            
+            // Gerar o arquivo XLSX
+            const fileName = `controle_alcool_${new Date().toISOString().slice(0, 10)}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+            
+            showNotification('Planilha exportada com sucesso!', 'success');
+        }
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCurrentDate();
+            
+            // Atualizar a data a cada minuto
+            setInterval(updateCurrentDate, 60000);
+            
+            // Carregar registros existentes
+            updateRecordsTable();
+            updateSummary();
+            
+            // Configurar botão de salvar
+            document.getElementById('save-btn').addEventListener('click', function() {
+                const product = document.getElementById('product').value;
+                const sector = document.getElementById('sector').value;
+                const quantity = document.getElementById('quantity').value;
+                
+                if (!product) {
+                    showNotification('Selecione um produto', 'error');
+                    return;
+                }
+                
+                if (!sector) {
+                    showNotification('Selecione um setor', 'error');
+                    return;
+                }
+                
+                if (!quantity || quantity < 1) {
+                    showNotification('Informe uma quantidade válida', 'error');
+                    return;
+                }
+                
+                addRecord(product, sector, quantity);
+                
+                // Resetar o formulário
+                clearForm();
+            });
+            
+            // Configurar botão de limpar
+            document.getElementById('clear-btn').addEventListener('click', clearForm);
+            
+            // Configurar botão de exportar
+            document.getElementById('export-btn').addEventListener('click', exportToExcel);
+            
+            // Configurar abas mobile
+            document.querySelectorAll('.mobile-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Atualizar aba ativa
+                    document.querySelectorAll('.mobile-tab').forEach(t => {
+                        t.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Mostrar seção correspondente
+                    const tabName = this.getAttribute('data-tab');
+                    
+                    if (tabName === 'form') {
+                        document.querySelector('.left-column').style.display = 'block';
+                        document.querySelector('.right-column').style.display = 'none';
+                    } 
+                    else if (tabName === 'history') {
+                        document.querySelector('.left-column').style.display = 'none';
+                        document.querySelector('.right-column').style.display = 'block';
+                    }
+                    else if (tabName === 'summary') {
+                        document.querySelector('.left-column').style.display = 'block';
+                        document.querySelector('.right-column').style.display = 'none';
+                    }
+                });
+            });
+            
+            // Inicializar para mobile
+            if (window.innerWidth < 768) {
+                document.querySelector('.right-column').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
