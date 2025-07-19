@@ -7,13 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
-        
-        .device-cell {
-            max-width: 100px;
-            word-wrap: break-word;
-            white-space: nowrap;
-        }
-        
         :root {
             --primary: #1a5276;
             --secondary: #2980b9;
@@ -275,6 +268,11 @@
         
         .sector-cell {
             max-width: 200px;
+            word-wrap: break-word;
+        }
+        
+        .device-cell {
+            max-width: 100px;
             word-wrap: break-word;
         }
         
@@ -699,23 +697,23 @@
                         <span id="records-count" class="counter-badge">0</span>
                     </div>
                     
-                     <div class="table-container">
-        <table id="records-table">
-            <thead>
-                <tr>
-                    <th>Produto</th>
-                    <th>Setor</th>
-                    <th>Quantidade</th>
-                    <th>Data</th>
-                    <th>Dispositivo</th> <!-- Nova coluna adicionada -->
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody id="records-body">
-                <!-- Dados serão inseridos aqui via JavaScript -->
-            </tbody>
-        </table>
-    </div>
+                    <div class="table-container">
+                        <table id="records-table">
+                            <thead>
+                                <tr>
+                                    <th>Produto</th>
+                                    <th>Setor</th>
+                                    <th>Quantidade</th>
+                                    <th>Data</th>
+                                    <th>Dispositivo</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="records-body">
+                                <!-- Dados serão inseridos aqui via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
                     
                     <div id="empty-state" class="empty-state">
                         <i class="fas fa-inbox"></i>
@@ -756,10 +754,8 @@
     </div>
 
     <script>
-       // Armazenamento de dados no localStorage com namespace por dispositivo
-        const DEVICE_ID = localStorage.getItem('device_id') || Date.now().toString(36) + Math.random().toString(36).substr(2);
-        localStorage.setItem('device_id', DEVICE_ID);
-        const STORAGE_KEY = `hospital_hygiene_records_${DEVICE_ID}`;
+        // Armazenamento de dados no localStorage
+        const STORAGE_KEY = 'hospital_hygiene_records';
         
         // Atualizar data atual
         function updateCurrentDate() {
@@ -778,13 +774,23 @@
         
         // Carregar registros do localStorage
         function loadRecords() {
-            const recordsData = localStorage.getItem(STORAGE_KEY);
-            return recordsData ? JSON.parse(recordsData) : [];
+            try {
+                const recordsData = localStorage.getItem(STORAGE_KEY);
+                return recordsData ? JSON.parse(recordsData) : [];
+            } catch (e) {
+                console.error('Erro ao carregar registros:', e);
+                return [];
+            }
         }
         
         // Salvar registros no localStorage
         function saveRecords(records) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+            } catch (e) {
+                console.error('Erro ao salvar registros:', e);
+                showNotification('Erro ao salvar dados localmente', 'error');
+            }
         }
         
         let records = loadRecords();
@@ -814,7 +820,7 @@
                 sector: sector,
                 quantity: parseInt(quantity),
                 date: dateStr,
-                device: deviceType  // Adicionando informação do dispositivo
+                device: deviceType
             };
             
             records.unshift(newRecord);
@@ -849,7 +855,7 @@
                         <td class="sector-cell">${record.sector}</td>
                         <td>${record.quantity}</td>
                         <td>${record.date}</td>
-                        <td class="device-cell">${record.device}</td> <!-- Nova célula adicionada -->
+                        <td class="device-cell">${record.device || 'N/A'}</td>
                         <td class="action-cell">
                             <button class="btn-action btn-edit" onclick="editRecord(${record.id})">
                                 <i class="fas fa-edit"></i> Editar
@@ -977,7 +983,7 @@
             }
         }
         
-         // Função para exportar dados para Excel (XLSX)
+        // Função para exportar dados para Excel (XLSX)
         function exportToExcel() {
             if (records.length === 0) {
                 showNotification('Nenhum dado para exportar', 'error');
@@ -986,7 +992,7 @@
             
             // Preparar os dados para a planilha
             const data = [
-                ['Produto', 'Setor', 'Quantidade', 'Data e Hora', 'Dispositivo'] // Cabeçalhos atualizados
+                ['Produto', 'Setor', 'Quantidade', 'Data e Hora', 'Dispositivo'] // Cabeçalhos
             ];
             
             // Adicionar os registros
@@ -996,7 +1002,7 @@
                     record.sector,
                     record.quantity,
                     record.date,
-                    record.device  // Incluindo dispositivo na exportação
+                    record.device || 'N/A'
                 ]);
             });
             
@@ -1076,6 +1082,7 @@
             setInterval(updateCurrentDate, 60000);
             
             // Carregar registros existentes
+            records = loadRecords();
             updateRecordsTable();
             updateSummary();
             
@@ -1131,7 +1138,7 @@
             // Mostrar mensagem de armazenamento
             if (records.length > 0) {
                 const deviceType = isMobile() ? 'celular' : 'computador';
-                showNotification(`Dados carregados do armazenamento local (${records.length} registros)`, 'success');
+                showNotification(`${records.length} registros carregados do armazenamento local`, 'success');
             }
         });
     </script>
