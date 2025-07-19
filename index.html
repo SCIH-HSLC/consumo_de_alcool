@@ -6,6 +6,9 @@
     <title>Controle de Higiene Hospitalar</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <style>
         :root {
             --primary: #1a5276;
@@ -345,6 +348,10 @@
             background: var(--danger);
         }
         
+        .notification.info {
+            background: var(--hospital-blue);
+        }
+        
         .counter-badge {
             display: inline-block;
             background: var(--hospital-blue);
@@ -414,6 +421,21 @@
             color: var(--primary);
             padding-bottom: 8px;
             border-bottom: 2px solid rgba(52, 152, 219, 0.2);
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         
         /* Menu Mobile */
@@ -744,7 +766,7 @@
     <footer>
         <div class="container">
             <p>Sistema de Controle de Produtos de Higiene &copy; 2023 - Desenvolvido para o Hospital</p>
-            <p>Dados armazenados localmente no seu dispositivo</p>
+            <p>Dados armazenados em banco de dados centralizado</p>
         </div>
     </footer>
     
@@ -754,8 +776,20 @@
     </div>
 
     <script>
-        // Armazenamento de dados no localStorage
-        const STORAGE_KEY = 'hospital_hygiene_records';
+        // Configuração do Firebase (substitua com suas credenciais)
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY",
+            authDomain: "SEU_PROJETO.firebaseapp.com",
+            projectId: "SEU_PROJETO",
+            storageBucket: "SEU_PROJETO.appspot.com",
+            messagingSenderId: "SEU_SENDER_ID",
+            appId: "SEU_APP_ID"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const recordsCollection = db.collection("hygiene_records");
         
         // Atualizar data atual
         function updateCurrentDate() {
@@ -772,29 +806,6 @@
                 now.toLocaleDateString('pt-BR', options);
         }
         
-        // Carregar registros do localStorage
-        function loadRecords() {
-            try {
-                const recordsData = localStorage.getItem(STORAGE_KEY);
-                return recordsData ? JSON.parse(recordsData) : [];
-            } catch (e) {
-                console.error('Erro ao carregar registros:', e);
-                return [];
-            }
-        }
-        
-        // Salvar registros no localStorage
-        function saveRecords(records) {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-            } catch (e) {
-                console.error('Erro ao salvar registros:', e);
-                showNotification('Erro ao salvar dados localmente', 'error');
-            }
-        }
-        
-        let records = loadRecords();
-        
         // Função para mostrar notificação
         function showNotification(message, type) {
             const notification = document.getElementById('notification');
@@ -807,7 +818,7 @@
         }
         
         // Função para adicionar novo registro
-        function addRecord(product, sector, quantity) {
+        async function addRecord(product, sector, quantity) {
             const now = new Date();
             const dateStr = now.toLocaleString('pt-BR');
             
@@ -815,20 +826,63 @@
             const deviceType = isMobile() ? 'Mobile' : 'Desktop';
             
             const newRecord = {
-                id: Date.now(),
                 product: product,
                 sector: sector,
                 quantity: parseInt(quantity),
                 date: dateStr,
-                device: deviceType
+                device: deviceType,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
             };
             
-            records.unshift(newRecord);
-            saveRecords(records);
-            updateRecordsTable();
-            updateSummary();
-            
-            showNotification('Registro salvo com sucesso!', 'success');
+            try {
+                // Mostrar indicador de carregamento
+                const saveBtn = document.getElementById('save-btn');
+                saveBtn.innerHTML = '<div class="loading"></div> Salvando...';
+                saveBtn.disabled = true;
+                
+                // Salvar no Firebase
+                await recordsCollection.add(newRecord);
+                
+                // Recarregar registros
+                await loadRecords();
+                
+                showNotification('Registro salvo com sucesso!', 'success');
+            } catch (error) {
+                console.error("Erro ao salvar registro: ", error);
+                showNotification('Erro ao salvar registro: ' + error.message, 'error');
+            } finally {
+                // Restaurar botão
+                saveBtn.innerHTML = '<i class="fas fa-save"></i> Salvar Registro';
+                saveBtn.disabled = false;
+            }
+        }
+        
+        // Função para carregar registros
+        async function loadRecords() {
+            try {
+                // Mostrar indicador de carregamento
+                const tbody = document.getElementById('records-body');
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;">Carregando registros...</td></tr>';
+                
+                // Buscar registros do Firebase
+                const snapshot = await recordsCollection.orderBy("timestamp", "desc").get();
+                records = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                
+                // Atualizar interface
+                updateRecordsTable();
+                updateSummary();
+                
+                // Mostrar notificação
+                if (records.length > 0) {
+                    showNotification(`${records.length} registros carregados`, 'info');
+                }
+            } catch (error) {
+                console.error("Erro ao carregar registros: ", error);
+                showNotification('Erro ao carregar registros: ' + error.message, 'error');
+            }
         }
         
         // Função para atualizar a tabela de registros
@@ -837,7 +891,7 @@
             const counter = document.getElementById('records-count');
             const emptyState = document.getElementById('empty-state');
             
-            if (records.length === 0) {
+            if (!records || records.length === 0) {
                 tbody.innerHTML = '';
                 emptyState.style.display = 'block';
                 counter.textContent = '0';
@@ -857,10 +911,10 @@
                         <td>${record.date}</td>
                         <td class="device-cell">${record.device || 'N/A'}</td>
                         <td class="action-cell">
-                            <button class="btn-action btn-edit" onclick="editRecord(${record.id})">
+                            <button class="btn-action btn-edit" onclick="editRecord('${record.id}')">
                                 <i class="fas fa-edit"></i> Editar
                             </button>
-                            <button class="btn-action btn-delete" onclick="deleteRecord(${record.id})">
+                            <button class="btn-action btn-delete" onclick="deleteRecord('${record.id}')">
                                 <i class="fas fa-trash-alt"></i> Excluir
                             </button>
                         </td>
@@ -878,7 +932,7 @@
             const productSummary = document.getElementById('product-summary');
             const sectorSummary = document.getElementById('sector-summary');
             
-            if (records.length === 0) {
+            if (!records || records.length === 0) {
                 productSummary.innerHTML = '<p>Nenhum registro ainda</p>';
                 sectorSummary.innerHTML = '<p>Nenhum registro ainda</p>';
                 return;
@@ -902,9 +956,13 @@
             let productHtml = '';
             const topProducts = productArray.slice(0, 3);
             
-            topProducts.forEach(item => {
-                productHtml += `<p>${item.product}: <span class="value">${item.count}</span></p>`;
-            });
+            if (topProducts.length === 0) {
+                productHtml = '<p>Nenhum registro ainda</p>';
+            } else {
+                topProducts.forEach(item => {
+                    productHtml += `<p>${item.product}: <span class="value">${item.count}</span></p>`;
+                });
+            }
             
             productSummary.innerHTML = productHtml;
             
@@ -926,15 +984,19 @@
             let sectorHtml = '';
             const topSectors = sectorArray.slice(0, 3);
             
-            topSectors.forEach(item => {
-                sectorHtml += `<p>${item.sector}: <span class="value">${item.count}</span></p>`;
-            });
+            if (topSectors.length === 0) {
+                sectorHtml = '<p>Nenhum registro ainda</p>';
+            } else {
+                topSectors.forEach(item => {
+                    sectorHtml += `<p>${item.sector}: <span class="value">${item.count}</span></p>`;
+                });
+            }
             
             sectorSummary.innerHTML = sectorHtml;
         }
         
         // Função para editar registro
-        function editRecord(id) {
+        async function editRecord(id) {
             const record = records.find(r => r.id === id);
             if (record) {
                 document.getElementById('product').value = record.product;
@@ -942,26 +1004,32 @@
                 document.getElementById('quantity').value = record.quantity;
                 
                 // Remover o registro antigo
-                records = records.filter(r => r.id !== id);
-                saveRecords(records);
-                updateRecordsTable();
-                updateSummary();
-                
-                // Ativar a aba de formulário no mobile
-                activateMobileTab('form');
-                
-                showNotification('Registro carregado para edição', 'success');
+                try {
+                    await recordsCollection.doc(id).delete();
+                    await loadRecords();
+                    
+                    // Ativar a aba de formulário no mobile
+                    activateMobileTab('form');
+                    
+                    showNotification('Registro carregado para edição', 'success');
+                } catch (error) {
+                    console.error("Erro ao excluir registro: ", error);
+                    showNotification('Erro ao carregar registro para edição: ' + error.message, 'error');
+                }
             }
         }
         
         // Função para excluir registro
-        function deleteRecord(id) {
+        async function deleteRecord(id) {
             if (confirm('Tem certeza que deseja excluir este registro?')) {
-                records = records.filter(r => r.id !== id);
-                saveRecords(records);
-                updateRecordsTable();
-                updateSummary();
-                showNotification('Registro excluído com sucesso', 'success');
+                try {
+                    await recordsCollection.doc(id).delete();
+                    await loadRecords();
+                    showNotification('Registro excluído com sucesso', 'success');
+                } catch (error) {
+                    console.error("Erro ao excluir registro: ", error);
+                    showNotification('Erro ao excluir registro: ' + error.message, 'error');
+                }
             }
         }
         
@@ -973,19 +1041,32 @@
         }
         
         // Função para limpar todos os registros
-        function clearAllRecords() {
+        async function clearAllRecords() {
             if (confirm('Tem certeza que deseja limpar TODOS os registros? Esta ação não pode ser desfeita.')) {
-                records = [];
-                saveRecords(records);
-                updateRecordsTable();
-                updateSummary();
-                showNotification('Todos os registros foram removidos', 'success');
+                try {
+                    // Obter todos os documentos
+                    const snapshot = await recordsCollection.get();
+                    
+                    // Deletar em lote
+                    const batch = db.batch();
+                    snapshot.docs.forEach(doc => {
+                        batch.delete(doc.ref);
+                    });
+                    
+                    await batch.commit();
+                    
+                    await loadRecords();
+                    showNotification('Todos os registros foram removidos', 'success');
+                } catch (error) {
+                    console.error("Erro ao limpar registros: ", error);
+                    showNotification('Erro ao limpar registros: ' + error.message, 'error');
+                }
             }
         }
         
         // Função para exportar dados para Excel (XLSX)
         function exportToExcel() {
-            if (records.length === 0) {
+            if (!records || records.length === 0) {
                 showNotification('Nenhum dado para exportar', 'error');
                 return;
             }
@@ -1082,9 +1163,7 @@
             setInterval(updateCurrentDate, 60000);
             
             // Carregar registros existentes
-            records = loadRecords();
-            updateRecordsTable();
-            updateSummary();
+            loadRecords();
             
             // Configurar botão de salvar
             document.getElementById('save-btn').addEventListener('click', function() {
@@ -1133,12 +1212,6 @@
             // Inicializar para mobile
             if (window.innerWidth < 900) {
                 activateMobileTab('form');
-            }
-            
-            // Mostrar mensagem de armazenamento
-            if (records.length > 0) {
-                const deviceType = isMobile() ? 'celular' : 'computador';
-                showNotification(`${records.length} registros carregados do armazenamento local`, 'success');
             }
         });
     </script>
