@@ -7,6 +7,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
+        
+        .device-cell {
+            max-width: 100px;
+            word-wrap: break-word;
+            white-space: nowrap;
+        }
+        
         :root {
             --primary: #1a5276;
             --secondary: #2980b9;
@@ -692,22 +699,23 @@
                         <span id="records-count" class="counter-badge">0</span>
                     </div>
                     
-                    <div class="table-container">
-                        <table id="records-table">
-                            <thead>
-                                <tr>
-                                    <th>Produto</th>
-                                    <th>Setor</th>
-                                    <th>Quantidade</th>
-                                    <th>Data</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="records-body">
-                                <!-- Dados serão inseridos aqui via JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
+                     <div class="table-container">
+        <table id="records-table">
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Setor</th>
+                    <th>Quantidade</th>
+                    <th>Data</th>
+                    <th>Dispositivo</th> <!-- Nova coluna adicionada -->
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="records-body">
+                <!-- Dados serão inseridos aqui via JavaScript -->
+            </tbody>
+        </table>
+    </div>
                     
                     <div id="empty-state" class="empty-state">
                         <i class="fas fa-inbox"></i>
@@ -748,8 +756,10 @@
     </div>
 
     <script>
-        // Armazenamento de dados no localStorage
-        const STORAGE_KEY = 'hospital_hygiene_records';
+       // Armazenamento de dados no localStorage com namespace por dispositivo
+        const DEVICE_ID = localStorage.getItem('device_id') || Date.now().toString(36) + Math.random().toString(36).substr(2);
+        localStorage.setItem('device_id', DEVICE_ID);
+        const STORAGE_KEY = `hospital_hygiene_records_${DEVICE_ID}`;
         
         // Atualizar data atual
         function updateCurrentDate() {
@@ -795,13 +805,16 @@
             const now = new Date();
             const dateStr = now.toLocaleString('pt-BR');
             
+            // Determinar tipo de dispositivo
+            const deviceType = isMobile() ? 'Mobile' : 'Desktop';
+            
             const newRecord = {
                 id: Date.now(),
                 product: product,
                 sector: sector,
                 quantity: parseInt(quantity),
                 date: dateStr,
-                device: isMobile() ? 'Mobile' : 'Desktop'
+                device: deviceType  // Adicionando informação do dispositivo
             };
             
             records.unshift(newRecord);
@@ -836,6 +849,7 @@
                         <td class="sector-cell">${record.sector}</td>
                         <td>${record.quantity}</td>
                         <td>${record.date}</td>
+                        <td class="device-cell">${record.device}</td> <!-- Nova célula adicionada -->
                         <td class="action-cell">
                             <button class="btn-action btn-edit" onclick="editRecord(${record.id})">
                                 <i class="fas fa-edit"></i> Editar
@@ -963,7 +977,7 @@
             }
         }
         
-        // Função para exportar dados para Excel (XLSX)
+         // Função para exportar dados para Excel (XLSX)
         function exportToExcel() {
             if (records.length === 0) {
                 showNotification('Nenhum dado para exportar', 'error');
@@ -972,7 +986,7 @@
             
             // Preparar os dados para a planilha
             const data = [
-                ['Produto', 'Setor', 'Quantidade', 'Data e Hora', 'Dispositivo'] // Cabeçalhos
+                ['Produto', 'Setor', 'Quantidade', 'Data e Hora', 'Dispositivo'] // Cabeçalhos atualizados
             ];
             
             // Adicionar os registros
@@ -982,7 +996,7 @@
                     record.sector,
                     record.quantity,
                     record.date,
-                    record.device
+                    record.device  // Incluindo dispositivo na exportação
                 ]);
             });
             
