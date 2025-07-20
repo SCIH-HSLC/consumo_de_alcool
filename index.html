@@ -3,24 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Higiene Hospitalar</title>
+    <title>Controle de Produtos Hospitalares</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root {
-            --primary: #1a5276;
-            --secondary: #2980b9;
-            --accent: #16a085;
-            --light: #ecf0f1;
-            --dark: #2c3e50;
-            --success: #27ae60;
-            --warning: #f39c12;
-            --danger: #e74c3c;
-            --gray: #95a5a6;
-            --hospital-blue: #3498db;
-            --hospital-green: #2ecc71;
-        }
-        
         * {
             margin: 0;
             padding: 0;
@@ -29,1076 +15,878 @@
         }
         
         body {
-            background: linear-gradient(135deg, #e8f4f8, #d1e7f0);
+            background: linear-gradient(135deg, #1a4a7a, #1e5799, #207cca, #2989d8);
             color: #333;
-            line-height: 1.6;
             min-height: 100vh;
-            padding-bottom: 80px;
+            padding: 20px;
         }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
         }
         
         header {
-            background: linear-gradient(135deg, var(--primary), var(--hospital-blue));
-            color: white;
-            padding: 15px 0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border-radius: 0 0 15px 15px;
-            margin-bottom: 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .header-content {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
         }
         
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
-            flex: 1;
+            gap: 15px;
         }
         
-        .logo i {
-            font-size: 2rem;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 10px;
+        .logo-icon {
+            background: #1e5799;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-        }
-        
-        .logo h1 {
-            font-size: 1.4rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-        
-        .date-display {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
             display: flex;
             align-items: center;
-            gap: 6px;
-            margin-top: 5px;
+            justify-content: center;
         }
         
-        .main-grid {
+        .logo-icon i {
+            font-size: 28px;
+            color: white;
+        }
+        
+        .logo-text h1 {
+            color: #1e5799;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .logo-text p {
+            color: #2989d8;
+            font-size: 14px;
+        }
+        
+        .main-content {
             display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 20px;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
         }
         
-        @media (max-width: 900px) {
-            .main-grid {
+        @media (max-width: 768px) {
+            .main-content {
                 grid-template-columns: 1fr;
             }
         }
         
         .card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-            padding: 20px;
-            margin-bottom: 20px;
-            transition: transform 0.3s ease;
-            border: 1px solid rgba(52, 152, 219, 0.1);
-        }
-        
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
         .card-title {
-            color: var(--primary);
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--hospital-blue);
-            font-size: 1.3rem;
+            color: #1e5799;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+        }
+        
+        .card-title i {
+            font-size: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1e5799;
             display: flex;
             align-items: center;
             gap: 8px;
         }
         
-        .card-title i {
-            color: var(--hospital-blue);
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: var(--dark);
-            font-size: 0.95rem;
+        .hospital-icon {
+            color: #e74c3c;
         }
         
         select, input {
             width: 100%;
             padding: 12px 15px;
-            border: 2px solid #d6eaf8;
+            border: 2px solid #ddd;
             border-radius: 8px;
-            font-size: 0.95rem;
+            font-size: 16px;
             transition: all 0.3s;
-            background: #f8fbfd;
         }
         
         select:focus, input:focus {
-            border-color: var(--hospital-blue);
+            border-color: #2989d8;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
-            background: white;
+            box-shadow: 0 0 0 3px rgba(41, 137, 216, 0.2);
         }
         
-        .btn {
-            display: inline-block;
-            padding: 12px 20px;
-            background: var(--hospital-green);
+        button {
+            background: linear-gradient(to right, #1e5799, #2989d8);
             color: white;
             border: none;
+            padding: 14px 25px;
+            font-size: 16px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem;
+            transition: all 0.3s;
             font-weight: 600;
-            transition: all 0.3s ease;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 3px 8px rgba(46, 204, 113, 0.3);
-        }
-        
-        .btn:hover {
-            background: #27ae60;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 12px rgba(39, 174, 96, 0.4);
-        }
-        
-        .btn:active {
-            transform: translateY(1px);
-        }
-        
-        .btn i {
-            margin-right: 6px;
-        }
-        
-        .btn-clear {
-            background: var(--warning);
-            box-shadow: 0 3px 8px rgba(243, 156, 18, 0.3);
-            margin-top: 8px;
-        }
-        
-        .btn-clear:hover {
-            background: #e67e22;
-            box-shadow: 0 5px 12px rgba(230, 126, 34, 0.4);
-        }
-        
-        .btn-export {
-            background: var(--hospital-blue);
-            box-shadow: 0 3px 8px rgba(52, 152, 219, 0.3);
-        }
-        
-        .btn-export:hover {
-            background: #2980b9;
-            box-shadow: 0 5px 12px rgba(41, 128, 185, 0.4);
-        }
-        
-        .btn-clear-all {
-            background: var(--danger);
-            box-shadow: 0 3px 8px rgba(231, 76, 60, 0.3);
-            margin-top: 15px;
-        }
-        
-        .btn-clear-all:hover {
-            background: #c0392b;
-            box-shadow: 0 5px 12px rgba(192, 57, 43, 0.4);
-        }
-        
-        /* Área da tabela */
-        .table-container {
-            overflow-x: auto;
-            max-height: 500px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            background: white;
-            margin-top: 10px;
-        }
-        
-        #records-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 600px;
-        }
-        
-        #records-table th, 
-        #records-table td {
-            padding: 14px 15px;
-            text-align: left;
-            border-bottom: 1px solid #e3f2fd;
-            vertical-align: top;
-            font-size: 0.9rem;
-        }
-        
-        #records-table th {
-            background-color: var(--primary);
-            color: white;
-            font-weight: 600;
-            position: sticky;
-            top: 0;
-        }
-        
-        #records-table tr:nth-child(even) {
-            background-color: #f5fafd;
-        }
-        
-        #records-table tr:hover {
-            background-color: #ebf5fb;
-        }
-        
-        /* Células com quebra de palavras */
-        .product-cell {
-            max-width: 200px;
-            word-wrap: break-word;
-        }
-        
-        .sector-cell {
-            max-width: 200px;
-            word-wrap: break-word;
-        }
-        
-        .device-cell {
-            max-width: 100px;
-            word-wrap: break-word;
-        }
-        
-        .action-cell {
             display: flex;
-            gap: 6px;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
             flex-wrap: wrap;
         }
         
-        .btn-action {
-            padding: 7px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            border: none;
-            transition: all 0.2s;
-            white-space: nowrap;
+        .btn-clear {
+            background: linear-gradient(to right, #e74c3c, #c0392b);
         }
         
-        .btn-action:hover {
-            transform: scale(1.05);
+        .btn-export {
+            background: linear-gradient(to right, #27ae60, #2ecc71);
         }
         
         .btn-edit {
-            background: var(--hospital-blue);
+            background: linear-gradient(to right, #f39c12, #e67e22);
+        }
+        
+        .btn-cancel {
+            background: linear-gradient(to right, #95a5a6, #7f8c8d);
+        }
+        
+        .history-card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .history-list {
+            flex: 1;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .history-item {
+            background-color: #f8f9fa;
+            border-left: 4px solid #2989d8;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .history-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .product-name {
+            font-weight: 700;
+            color: #1e5799;
+        }
+        
+        .sector {
+            font-style: italic;
+            color: #6c757d;
+        }
+        
+        .history-date {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        
+        .history-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .edit-btn {
+            background-color: #f39c12;
             color: white;
         }
         
-        .btn-delete {
-            background: var(--danger);
+        .delete-btn {
+            background-color: #e74c3c;
             color: white;
+        }
+        
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .empty-history {
+            text-align: center;
+            padding: 30px;
+            color: #6c757d;
+        }
+        
+        .empty-history i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #ced4da;
         }
         
         footer {
             text-align: center;
+            color: white;
             margin-top: 30px;
-            padding: 15px;
-            color: var(--gray);
-            font-size: 0.85rem;
-            border-top: 1px solid #d6eaf8;
+            padding: 20px;
+            font-size: 14px;
         }
         
         .notification {
             position: fixed;
-            top: 15px;
-            right: 15px;
-            padding: 14px 20px;
-            border-radius: 8px;
+            top: 20px;
+            right: 20px;
+            background-color: #2ecc71;
             color: white;
-            font-weight: 500;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             transform: translateX(200%);
-            transition: transform 0.4s ease;
-            z-index: 1000;
+            transition: transform 0.3s ease-in-out;
             display: flex;
             align-items: center;
             gap: 10px;
-            max-width: calc(100% - 30px);
+            z-index: 1000;
         }
         
         .notification.show {
             transform: translateX(0);
         }
         
-        .notification.success {
-            background: var(--hospital-green);
-        }
-        
         .notification.error {
-            background: var(--danger);
+            background-color: #e74c3c;
         }
         
-        .notification.info {
-            background: var(--hospital-blue);
+        .notification.warning {
+            background-color: #f39c12;
         }
         
-        .counter-badge {
-            display: inline-block;
-            background: var(--hospital-blue);
+        .export-btn-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+            gap: 10px;
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(to right, #1e5799, #2989d8);
             color: white;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            margin-left: 6px;
-            font-weight: bold;
-        }
-        
-        .summary-card {
-            background: linear-gradient(135deg, #e3f2fd, #d0e5f7);
-            border-left: 4px solid var(--hospital-blue);
-            padding: 12px;
+            padding: 15px;
             border-radius: 8px;
-            margin-bottom: 12px;
-        }
-        
-        .summary-card h3 {
-            color: var(--primary);
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 1rem;
-        }
-        
-        .summary-card p {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--dark);
-        }
-        
-        .summary-card .value {
-            color: var(--hospital-blue);
-            font-size: 1.2rem;
-        }
-        
-        .hospital-icon {
-            color: var(--hospital-blue);
-            margin-right: 6px;
-        }
-        
-        .empty-state {
             text-align: center;
-            padding: 30px 15px;
-            color: var(--gray);
-            display: none;
+            min-width: 150px;
         }
         
-        .empty-state i {
-            font-size: 3rem;
-            opacity: 0.2;
-            margin-bottom: 10px;
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 10px;
         }
         
-        .empty-state p {
-            font-size: 1rem;
+        .stat-label {
+            font-size: 14px;
         }
         
-        .section-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 15px;
-            color: var(--primary);
-            padding-bottom: 8px;
-            border-bottom: 2px solid rgba(52, 152, 219, 0.2);
-        }
-        
-        /* Menu Mobile */
-        .mobile-tabs {
-            display: flex;
-            background: white;
+        .confirmation-modal {
             position: fixed;
-            bottom: 0;
+            top: 0;
             left: 0;
-            right: 0;
-            z-index: 90;
-            box-shadow: 0 -3px 10px rgba(0,0,0,0.1);
-        }
-        
-        .mobile-tab {
-            flex: 1;
-            text-align: center;
-            padding: 10px 5px;
-            color: var(--dark);
-            font-size: 0.75rem;
-            border-top: 3px solid transparent;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
             transition: all 0.3s;
         }
         
-        .mobile-tab.active {
-            border-top-color: var(--hospital-blue);
-            color: var(--hospital-blue);
-            font-weight: bold;
-            background: rgba(52, 152, 219, 0.05);
+        .confirmation-modal.show {
+            opacity: 1;
+            visibility: visible;
         }
         
-        .mobile-tab i {
-            display: block;
-            font-size: 1.1rem;
-            margin-bottom: 3px;
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
         }
         
-        /* Responsividade adicional */
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: row;
-                align-items: center;
-                gap: 5px;
-            }
-            
-            .date-display {
-                margin-top: 0;
-            }
-            
-            .logo h1 {
-                font-size: 1.1rem;
-            }
-            
-            .card-title {
-                font-size: 1.1rem;
-            }
-            
-            .btn {
-                padding: 10px;
-                font-size: 0.9rem;
-            }
-            
-            .section-title h2 {
-                font-size: 1.1rem;
-            }
-            
-            .summary-card p {
-                font-size: 0.9rem;
-            }
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
         }
         
-        @media (max-width: 480px) {
-            .header-content {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 5px;
-            }
-            
-            .logo {
-                width: 100%;
-            }
-            
-            .date-display {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .mobile-tab {
-                padding: 8px 3px;
-                font-size: 0.7rem;
-            }
-            
-            .mobile-tab i {
-                font-size: 1rem;
-            }
-            
-            .card-title {
-                font-size: 1rem;
-            }
-            
-            .btn {
-                padding: 9px;
-                font-size: 0.85rem;
-            }
-            
-            .form-group {
-                margin-bottom: 12px;
-            }
-            
-            select, input {
-                padding: 10px 12px;
-                font-size: 0.9rem;
-            }
-            
-            .section-title h2 {
-                font-size: 1rem;
-            }
+        .highlight {
+            background-color: #fff9e6;
+            border-left: 4px solid #f39c12;
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-hospital-alt"></i>
-                    <h1>Controle de Produtos de Higiene</h1>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-hospital"></i>
                 </div>
-                <div class="date-display">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span id="current-date">Carregando data...</span>
+                <div class="logo-text">
+                    <h1>Controle de Produtos Hospitalares</h1>
+                    <p>Sistema de gestão de insumos e produtos de higiene</p>
                 </div>
             </div>
-        </div>
-    </header>
-    
-    <div class="container">
-        <div class="main-grid">
-            <div class="left-column" id="form-section">
-                <div class="card">
-                    <h2 class="card-title"><i class="fas fa-calculator"></i> Controle de Produtos</h2>
-                    
-                    <div class="form-group">
-                        <label for="product"><i class="fas fa-pump-soap hospital-icon"></i> Produto:</label>
-                        <select id="product">
-                            <option value="">Selecione um produto</option>
-                            <option value="SABONETE LÍQUIDO (500 ml)">SABONETE LÍQUIDO (500 ml)</option>
-                            <option value="SABONETE LIQUIDO CLOREX (1000ML)">SABONETE LIQUIDO CLOREX (1000ML)</option>
-                            <option value="ÁLCOOL EM GEL (700 ml)">ÁLCOOL EM GEL (700 ml)</option>
-                            <option value="ÁLCOOL PUMP (250 ml)">ÁLCOOL PUMP (250 ml)</option>
-                            <option value="ÁLCOOL ESPUMA (1000 ml)">ÁLCOOL ESPUMA (1000 ml)</option>
-                            <option value="ÁLCOOL PURELL (1200 ml)">ÁLCOOL PURELL (1200 ml)</option>
-                            <option value="ÁLCOOL ESPUMA (475 ml)">ÁLCOOL ESPUMA (475 ml)</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="sector"><i class="fas fa-building hospital-icon"></i> Setor:</label>
-                        <select id="sector">
-                            <option value="">Selecione um setor</option>
-                            <option value="7º ANDAR - INTERNAÇÃO">7º ANDAR - INTERNAÇÃO</option>
-                            <option value="6º ANDAR - INTERNAÇÃO">6º ANDAR - INTERNAÇÃO</option>
-                            <option value="6º ANDAR - MATERNIDADE">6º ANDAR - MATERNIDADE</option>
-                            <option value="5º ANDAR - INTERNAÇÃO">5º ANDAR - INTERNAÇÃO</option>
-                            <option value="5º ANDAR - ONCOLOGIA">5º ANDAR - ONCOLOGIA</option>
-                            <option value="4º ANDAR - CEMED">4º ANDAR - CEMED</option>
-                            <option value="3º ANDAR - PEDIATRIA INTERNAÇÃO">3º ANDAR - PEDIATRIA INTERNAÇÃO</option>
-                            <option value="3º ANDAR - UTI PEDIATRICA">3º ANDAR - UTI PEDIATRICA</option>
-                            <option value="3º ANDAR - UTI NEONATAL">3º ANDAR - UTI NEONATAL</option>
-                            <option value="2º ANDAR CENTRO CIRURGICO">2º ANDAR CENTRO CIRURGICO</option>
-                            <option value="2º ANDAR CENTRO OBSTÉTRICO">2º ANDAR CENTRO OBSTÉTRICO</option>
-                            <option value="2º ANDAR - HOSPITAL DIA">2º ANDAR - HOSPITAL DIA</option>
-                            <option value="1º ANDAR ADULTO DML 01 – UTI">1º ANDAR ADULTO DML 01 – UTI</option>
-                            <option value="TÉRREO DML SADT">TÉRREO DML SADT</option>
-                            <option value="TÉRREO DML PSA">TÉRREO DML PSA</option>
-                            <option value="TÉRREO DML PSI">TÉRREO DML PSI</option>
-                            <option value="S1 DML 1 - MEDICINA DO TRABALHO">S1 DML 1 - MEDICINA DO TRABALHO</option>
-                            <option value="S1 DML 2 - MANUTENÇÃO">S1 DML 2 - MANUTENÇÃO</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="quantity"><i class="fas fa-cubes hospital-icon"></i> Quantidade:</label>
-                        <input type="number" id="quantity" min="1" value="1">
-                    </div>
-                    
-                    <div class="form-group">
-                        <button id="save-btn" class="btn"><i class="fas fa-save"></i> Salvar Registro</button>
-                        <button id="clear-btn" class="btn btn-clear"><i class="fas fa-broom"></i> Limpar Formulário</button>
-                    </div>
+            <div class="hospital-info">
+                <p><i class="fas fa-map-marker-alt"></i> Hospital Municipal de Saúde</p>
+                <p><i class="fas fa-calendar-alt"></i> <span id="current-date"></span></p>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-calculator"></i> Controle de Produtos</h2>
+                
+                <div class="form-group">
+                    <label for="product"><i class="fas fa-pump-soap hospital-icon"></i> Produto:</label>
+                    <select id="product">
+                        <option value="">Selecione um produto</option>
+                        <option value="SABONETE LÍQUIDO (500 ml)">SABONETE LÍQUIDO (500 ml)</option>
+                        <option value="SABONETE LIQUIDO CLOREX (1000ML)">SABONETE LIQUIDO CLOREX (1000ML)</option>
+                        <option value="ÁLCOOL EM GEL (700 ml)">ÁLCOOL EM GEL (700 ml)</option>
+                        <option value="ÁLCOOL PUMP (250 ml)">ÁLCOOL PUMP (250 ml)</option>
+                        <option value="ÁLCOOL ESPUMA (1000 ml)">ÁLCOOL ESPUMA (1000 ml)</option>
+                        <option value="ÁLCOOL PURELL (1200 ml)">ÁLCOOL PURELL (1200 ml)</option>
+                        <option value="ÁLCOOL ESPUMA (475 ml)">ÁLCOOL ESPUMA (475 ml)</option>
+                    </select>
                 </div>
                 
-                <div class="card" id="summary-section">
-                    <h2 class="card-title"><i class="fas fa-chart-pie"></i> Resumo</h2>
-                    
-                    <div class="summary-card">
-                        <h3><i class="fas fa-database"></i> Total de Registros</h3>
-                        <p><span id="total-records" class="value">0</span></p>
+                <div class="form-group">
+                    <label for="sector"><i class="fas fa-building hospital-icon"></i> Setor:</label>
+                    <select id="sector">
+                        <option value="">Selecione um setor</option>
+                        <option value="7º ANDAR - INTERNAÇÃO">7º ANDAR - INTERNAÇÃO</option>
+                        <option value="6º ANDAR - INTERNAÇÃO">6º ANDAR - INTERNAÇÃO</option>
+                        <option value="6º ANDAR - MATERNIDADE">6º ANDAR - MATERNIDADE</option>
+                        <option value="5º ANDAR - INTERNAÇÃO">5º ANDAR - INTERNAÇÃO</option>
+                        <option value="5º ANDAR - ONCOLOGIA">5º ANDAR - ONCOLOGIA</option>
+                        <option value="4º ANDAR - CEMED">4º ANDAR - CEMED</option>
+                        <option value="3º ANDAR - PEDIATRIA INTERNAÇÃO">3º ANDAR - PEDIATRIA INTERNAÇÃO</option>
+                        <option value="3º ANDAR - UTI PEDIATRICA">3º ANDAR - UTI PEDIATRICA</option>
+                        <option value="3º ANDAR - UTI NEONATAL">3º ANDAR - UTI NEONATAL</option>
+                        <option value="2º ANDAR CENTRO CIRURGICO">2º ANDAR CENTRO CIRURGICO</option>
+                        <option value="2º ANDAR CENTRO OBSTÉTRICO">2º ANDAR CENTRO OBSTÉTRICO</option>
+                        <option value="2º ANDAR - HOSPITAL DIA">2º ANDAR - HOSPITAL DIA</option>
+                        <option value="1º ANDAR ADULTO DML 01 – UTI">1º ANDAR ADULTO DML 01 – UTI</option>
+                        <option value="TÉRREO DML SADT">TÉRREO DML SADT</option>
+                        <option value="TÉRREO DML PSA">TÉRREO DML PSA</option>
+                        <option value="TÉRREO DML PSI">TÉRREO DML PSI</option>
+                        <option value="S1 DML 1 - MEDICINA DO TRABALHO">S1 DML 1 - MEDICINA DO TRABALHO</option>
+                        <option value="S1 DML 2 - MANUTENÇÃO">S1 DML 2 - MANUTENÇÃO</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="quantity"><i class="fas fa-boxes hospital-icon"></i> Quantidade:</label>
+                    <input type="number" id="quantity" min="1" value="1" placeholder="Quantidade">
+                </div>
+                
+                <div class="form-group">
+                    <label for="date"><i class="fas fa-calendar-alt hospital-icon"></i> Data:</label>
+                    <input type="date" id="date">
+                </div>
+                
+                <div class="btn-container">
+                    <button id="save-btn"><i class="fas fa-save"></i> Salvar Registro</button>
+                    <button id="update-btn" class="btn-edit" style="display:none;"><i class="fas fa-edit"></i> Atualizar</button>
+                    <button id="clear-btn" class="btn-clear"><i class="fas fa-trash-alt"></i> Limpar</button>
+                    <button id="cancel-edit-btn" class="btn-cancel" style="display:none;"><i class="fas fa-times"></i> Cancelar</button>
+                </div>
+                
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-label">Total de Registros</div>
+                        <div class="stat-value" id="total-records">0</div>
                     </div>
-                    
-                    <div class="summary-card">
-                        <h3><i class="fas fa-syringe"></i> Produtos Mais Utilizados</h3>
-                        <div id="product-summary">
-                            <p>Nenhum registro ainda</p>
-                        </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Produtos Hoje</div>
+                        <div class="stat-value" id="today-records">0</div>
                     </div>
-                    
-                    <div class="summary-card">
-                        <h3><i class="fas fa-map-marker-alt"></i> Setores com Mais Consumo</h3>
-                        <div id="sector-summary">
-                            <p>Nenhum registro ainda</p>
-                        </div>
-                    </div>
-                    
-                    <button id="export-btn" class="btn btn-export">
-                        <i class="fas fa-file-excel"></i> Exportar para Excel
-                    </button>
-                    
-                    <button id="clear-all-btn" class="btn btn-clear-all">
-                        <i class="fas fa-trash-alt"></i> Limpar Todos os Registros
-                    </button>
                 </div>
             </div>
             
-            <div class="right-column" id="history-section">
-                <div class="card">
-                    <div class="section-title">
-                        <i class="fas fa-list"></i>
-                        <h2>Histórico de Registros</h2>
-                        <span id="records-count" class="counter-badge">0</span>
+            <div class="card history-card">
+                <div class="history-header">
+                    <h2 class="card-title"><i class="fas fa-history"></i> Histórico de Registros</h2>
+                    <div class="search-box">
+                        <input type="text" id="search-input" placeholder="Buscar por produto ou setor...">
+                        <button id="search-btn"><i class="fas fa-search"></i> Buscar</button>
                     </div>
-                    
-                    <div class="table-container">
-                        <table id="records-table">
-                            <thead>
-                                <tr>
-                                    <th>Produto</th>
-                                    <th>Setor</th>
-                                    <th>Quantidade</th>
-                                    <th>Data</th>
-                                    <th>Dispositivo</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="records-body">
-                                <!-- Dados serão inseridos aqui via JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div id="empty-state" class="empty-state">
-                        <i class="fas fa-inbox"></i>
-                        <p>Nenhum registro encontrado</p>
-                        <p>Adicione registros usando o formulário ao lado</p>
-                    </div>
+                </div>
+                
+                <div class="history-list" id="history-list">
+                    <!-- Histórico será carregado aqui -->
+                </div>
+                
+                <div class="export-btn-container">
+                    <button id="export-btn" class="btn-export"><i class="fas fa-file-excel"></i> Exportar para Excel</button>
                 </div>
             </div>
         </div>
+        
+        <footer>
+            <p>Sistema de Controle de Produtos Hospitalares &copy; 2023 - Desenvolvido para o Hospital Municipal</p>
+        </footer>
     </div>
     
-    <!-- Menu Mobile -->
-    <div class="mobile-tabs">
-        <div class="mobile-tab active" data-tab="form">
-            <i class="fas fa-plus-circle"></i>
-            <span>Novo Registro</span>
-        </div>
-        <div class="mobile-tab" data-tab="history">
-            <i class="fas fa-history"></i>
-            <span>Histórico</span>
-        </div>
-        <div class="mobile-tab" data-tab="summary">
-            <i class="fas fa-chart-pie"></i>
-            <span>Resumo</span>
-        </div>
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span>Registro salvo com sucesso!</span>
     </div>
     
-    <footer>
-        <div class="container">
-            <p>Sistema de Controle de Produtos de Higiene &copy; 2023 - Desenvolvido para o Hospital</p>
-            <p>Dados armazenados localmente no seu navegador</p>
+    <div class="confirmation-modal" id="confirmation-modal">
+        <div class="modal-content">
+            <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #e74c3c; margin-bottom: 20px;"></i>
+            <h3 style="margin-bottom: 15px;">Confirmar Exclusão</h3>
+            <p>Você tem certeza que deseja excluir este registro?</p>
+            <p style="font-weight: 600; margin: 15px 0;" id="item-to-delete"></p>
+            <p>Esta ação não pode ser desfeita.</p>
+            <div class="modal-buttons">
+                <button id="confirm-delete-btn" class="btn-clear"><i class="fas fa-trash-alt"></i> Excluir</button>
+                <button id="cancel-delete-btn" class="btn-cancel"><i class="fas fa-times"></i> Cancelar</button>
+            </div>
         </div>
-    </footer>
-    
-    <div id="notification" class="notification">
-        <i class="fas fa-info-circle"></i>
-        <span>Mensagem de notificação</span>
     </div>
 
     <script>
-        // Armazenamento de dados no localStorage
-        const STORAGE_KEY = 'hospital_hygiene_records';
+        // Elementos do DOM
+        const saveBtn = document.getElementById('save-btn');
+        const updateBtn = document.getElementById('update-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const cancelEditBtn = document.getElementById('cancel-edit-btn');
+        const searchBtn = document.getElementById('search-btn');
+        const exportBtn = document.getElementById('export-btn');
+        const productSelect = document.getElementById('product');
+        const sectorSelect = document.getElementById('sector');
+        const quantityInput = document.getElementById('quantity');
+        const dateInput = document.getElementById('date');
+        const historyList = document.getElementById('history-list');
+        const notification = document.getElementById('notification');
+        const currentDateElement = document.getElementById('current-date');
+        const searchInput = document.getElementById('search-input');
+        const totalRecordsElement = document.getElementById('total-records');
+        const todayRecordsElement = document.getElementById('today-records');
+        const confirmationModal = document.getElementById('confirmation-modal');
+        const itemToDelete = document.getElementById('item-to-delete');
+        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+        const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
         
-        // Atualizar data atual
-        function updateCurrentDate() {
-            const now = new Date();
-            const options = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            };
-            document.getElementById('current-date').textContent = 
-                now.toLocaleDateString('pt-BR', options);
+        // Variáveis de estado
+        let currentEditId = null;
+        let itemToDeleteId = null;
+        
+        // Definir data atual como padrão
+        const today = new Date();
+        const formattedDate = today.toISOString().split('T')[0];
+        dateInput.value = formattedDate;
+        
+        // Formatar e exibir a data atual no cabeçalho
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        currentDateElement.textContent = today.toLocaleDateString('pt-BR', options);
+        
+        // Carregar histórico do localStorage
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem('productHistory')) || [];
+            updateStatistics(history);
+            displayHistory(history);
         }
         
-        // Carregar registros do localStorage
-        function loadRecords() {
-            try {
-                const recordsData = localStorage.getItem(STORAGE_KEY);
-                return recordsData ? JSON.parse(recordsData) : [];
-            } catch (e) {
-                console.error('Erro ao carregar registros:', e);
-                return [];
+        // Atualizar estatísticas
+        function updateStatistics(history) {
+            totalRecordsElement.textContent = history.length;
+            
+            // Contar registros de hoje
+            const todayRecords = history.filter(item => {
+                return item.date === formattedDate;
+            }).length;
+            
+            todayRecordsElement.textContent = todayRecords;
+        }
+        
+        // Exibir histórico
+        function displayHistory(history) {
+            historyList.innerHTML = '';
+            
+            if (history.length === 0) {
+                historyList.innerHTML = `
+                    <div class="empty-history">
+                        <i class="fas fa-inbox"></i>
+                        <h3>Nenhum registro encontrado</h3>
+                        <p>Adicione novos registros para preencher o histórico</p>
+                    </div>
+                `;
+                return;
             }
+            
+            // Filtrar se houver busca
+            const searchTerm = searchInput.value.toLowerCase();
+            const filteredHistory = searchTerm ? 
+                history.filter(item => 
+                    item.product.toLowerCase().includes(searchTerm) || 
+                    item.sector.toLowerCase().includes(searchTerm)
+                ) : history;
+            
+            // Ordenar por data mais recente
+            filteredHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            filteredHistory.forEach(item => {
+                const itemDate = new Date(item.date);
+                const formattedDate = itemDate.toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                });
+                
+                const historyItem = document.createElement('div');
+                historyItem.className = `history-item ${currentEditId === item.id ? 'highlight' : ''}`;
+                historyItem.dataset.id = item.id;
+                historyItem.innerHTML = `
+                    <div class="history-actions">
+                        <div class="action-btn edit-btn" title="Editar registro">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="action-btn delete-btn" title="Excluir registro">
+                            <i class="fas fa-trash-alt"></i>
+                        </div>
+                    </div>
+                    <div class="history-item-header">
+                        <span class="product-name">${item.product}</span>
+                        <span class="history-date">${formattedDate}</span>
+                    </div>
+                    <div class="sector">${item.sector}</div>
+                    <div class="quantity">Quantidade: ${item.quantity}</div>
+                `;
+                historyList.appendChild(historyItem);
+                
+                // Adicionar eventos de clique para editar/excluir
+                historyItem.querySelector('.edit-btn').addEventListener('click', () => editRecord(item.id));
+                historyItem.querySelector('.delete-btn').addEventListener('click', () => showDeleteConfirmation(item.id, item.product));
+            });
         }
         
-        // Salvar registros no localStorage
-        function saveRecords(records) {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-            } catch (e) {
-                console.error('Erro ao salvar registros:', e);
-                showNotification('Erro ao salvar dados localmente', 'error');
-            }
-        }
-        
-        let records = loadRecords();
-        
-        // Função para mostrar notificação
-        function showNotification(message, type) {
-            const notification = document.getElementById('notification');
+        // Mostrar notificação
+        function showNotification(message, type = 'success') {
             notification.querySelector('span').textContent = message;
-            notification.className = `notification ${type} show`;
+            notification.className = 'notification';
+            
+            if (type === 'error') {
+                notification.classList.add('error');
+            } else if (type === 'warning') {
+                notification.classList.add('warning');
+            }
+            
+            notification.classList.add('show');
             
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
         }
         
-        // Função para adicionar novo registro
-        function addRecord(product, sector, quantity) {
-            const now = new Date();
-            const dateStr = now.toLocaleString('pt-BR');
+        // Salvar registro
+        function saveRecord() {
+            const product = productSelect.value;
+            const sector = sectorSelect.value;
+            const quantity = quantityInput.value;
+            const date = dateInput.value;
             
-            // Determinar tipo de dispositivo
-            const deviceType = isMobile() ? 'Mobile' : 'Desktop';
+            if (!product || !sector || !quantity || !date) {
+                showNotification('Por favor, preencha todos os campos!', 'error');
+                return;
+            }
             
-            const newRecord = {
-                id: Date.now(),
-                product: product,
-                sector: sector,
-                quantity: parseInt(quantity),
-                date: dateStr,
-                device: deviceType
+            const record = {
+                id: Date.now(), // ID único para o registro
+                product,
+                sector,
+                quantity,
+                date
             };
             
-            records.unshift(newRecord);
-            saveRecords(records);
-            updateRecordsTable();
-            updateSummary();
+            // Obter histórico atual ou criar novo array
+            const history = JSON.parse(localStorage.getItem('productHistory')) || [];
             
-            showNotification('Registro salvo com sucesso!', 'success');
+            // Adicionar novo registro
+            history.push(record);
+            
+            // Salvar no localStorage
+            localStorage.setItem('productHistory', JSON.stringify(history));
+            
+            // Atualizar exibição
+            updateStatistics(history);
+            displayHistory(history);
+            
+            // Mostrar notificação
+            showNotification('Registro salvo com sucesso!');
+            
+            // Limpar campos
+            clearFields();
         }
         
-        // Função para atualizar a tabela de registros
-        function updateRecordsTable() {
-            const tbody = document.getElementById('records-body');
-            const counter = document.getElementById('records-count');
-            const emptyState = document.getElementById('empty-state');
-            
-            if (records.length === 0) {
-                tbody.innerHTML = '';
-                emptyState.style.display = 'block';
-                counter.textContent = '0';
-                document.getElementById('total-records').textContent = '0';
-                return;
-            }
-            
-            emptyState.style.display = 'none';
-            
-            let html = '';
-            records.forEach(record => {
-                html += `
-                    <tr>
-                        <td class="product-cell">${record.product}</td>
-                        <td class="sector-cell">${record.sector}</td>
-                        <td>${record.quantity}</td>
-                        <td>${record.date}</td>
-                        <td class="device-cell">${record.device || 'N/A'}</td>
-                        <td class="action-cell">
-                            <button class="btn-action btn-edit" onclick="editRecord(${record.id})">
-                                <i class="fas fa-edit"></i> Editar
-                            </button>
-                            <button class="btn-action btn-delete" onclick="deleteRecord(${record.id})">
-                                <i class="fas fa-trash-alt"></i> Excluir
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            tbody.innerHTML = html;
-            counter.textContent = records.length;
-            document.getElementById('total-records').textContent = records.length;
-        }
-        
-        // Função para atualizar o resumo
-        function updateSummary() {
-            const productSummary = document.getElementById('product-summary');
-            const sectorSummary = document.getElementById('sector-summary');
-            
-            if (records.length === 0) {
-                productSummary.innerHTML = '<p>Nenhum registro ainda</p>';
-                sectorSummary.innerHTML = '<p>Nenhum registro ainda</p>';
-                return;
-            }
-            
-            // Calcular resumo de produtos
-            const productCount = {};
-            records.forEach(record => {
-                if (!productCount[record.product]) {
-                    productCount[record.product] = 0;
-                }
-                productCount[record.product] += record.quantity;
-            });
-            
-            // Converter para array e ordenar
-            const productArray = Object.entries(productCount)
-                .map(([product, count]) => ({ product, count }))
-                .sort((a, b) => b.count - a.count);
-            
-            // Gerar HTML para produtos
-            let productHtml = '';
-            const topProducts = productArray.slice(0, 3);
-            
-            topProducts.forEach(item => {
-                productHtml += `<p>${item.product}: <span class="value">${item.count}</span></p>`;
-            });
-            
-            productSummary.innerHTML = productHtml;
-            
-            // Calcular resumo de setores
-            const sectorCount = {};
-            records.forEach(record => {
-                if (!sectorCount[record.sector]) {
-                    sectorCount[record.sector] = 0;
-                }
-                sectorCount[record.sector] += record.quantity;
-            });
-            
-            // Converter para array e ordenar
-            const sectorArray = Object.entries(sectorCount)
-                .map(([sector, count]) => ({ sector, count }))
-                .sort((a, b) => b.count - a.count);
-            
-            // Gerar HTML para setores
-            let sectorHtml = '';
-            const topSectors = sectorArray.slice(0, 3);
-            
-            topSectors.forEach(item => {
-                sectorHtml += `<p>${item.sector}: <span class="value">${item.count}</span></p>`;
-            });
-            
-            sectorSummary.innerHTML = sectorHtml;
-        }
-        
-        // Função para editar registro
+        // Editar registro
         function editRecord(id) {
-            const record = records.find(r => r.id === id);
+            const history = JSON.parse(localStorage.getItem('productHistory')) || [];
+            const record = history.find(item => item.id === id);
+            
             if (record) {
-                document.getElementById('product').value = record.product;
-                document.getElementById('sector').value = record.sector;
-                document.getElementById('quantity').value = record.quantity;
+                // Preencher formulário com dados do registro
+                productSelect.value = record.product;
+                sectorSelect.value = record.sector;
+                quantityInput.value = record.quantity;
+                dateInput.value = record.date;
                 
-                // Remover o registro antigo
-                records = records.filter(r => r.id !== id);
-                saveRecords(records);
-                updateRecordsTable();
-                updateSummary();
+                // Ativar modo edição
+                currentEditId = id;
                 
-                // Ativar a aba de formulário no mobile
-                activateMobileTab('form');
+                // Mostrar botões de edição
+                saveBtn.style.display = 'none';
+                updateBtn.style.display = 'flex';
+                cancelEditBtn.style.display = 'flex';
                 
-                showNotification('Registro carregado para edição', 'success');
+                // Destacar item sendo editado
+                displayHistory(history);
+                
+                showNotification('Modo de edição ativado. Atualize os dados conforme necessário.', 'warning');
             }
         }
         
-        // Função para excluir registro
-        function deleteRecord(id) {
-            if (confirm('Tem certeza que deseja excluir este registro?')) {
-                records = records.filter(r => r.id !== id);
-                saveRecords(records);
-                updateRecordsTable();
-                updateSummary();
-                showNotification('Registro excluído com sucesso', 'success');
+        // Atualizar registro
+        function updateRecord() {
+            const history = JSON.parse(localStorage.getItem('productHistory')) || [];
+            const recordIndex = history.findIndex(item => item.id === currentEditId);
+            
+            if (recordIndex !== -1) {
+                // Atualizar dados do registro
+                history[recordIndex].product = productSelect.value;
+                history[recordIndex].sector = sectorSelect.value;
+                history[recordIndex].quantity = quantityInput.value;
+                history[recordIndex].date = dateInput.value;
+                
+                // Salvar no localStorage
+                localStorage.setItem('productHistory', JSON.stringify(history));
+                
+                // Atualizar exibição
+                updateStatistics(history);
+                displayHistory(history);
+                
+                // Mostrar notificação
+                showNotification('Registro atualizado com sucesso!');
+                
+                // Sair do modo edição
+                cancelEdit();
             }
         }
         
-        // Função para limpar formulário
-        function clearForm() {
-            document.getElementById('product').value = '';
-            document.getElementById('sector').value = '';
-            document.getElementById('quantity').value = '1';
+        // Cancelar edição
+        function cancelEdit() {
+            currentEditId = null;
+            
+            // Mostrar botão de salvar
+            saveBtn.style.display = 'flex';
+            updateBtn.style.display = 'none';
+            cancelEditBtn.style.display = 'none';
+            
+            // Limpar campos
+            clearFields();
+            
+            // Atualizar histórico para remover destaque
+            loadHistory();
         }
         
-        // Função para limpar todos os registros
-        function clearAllRecords() {
-            if (confirm('Tem certeza que deseja limpar TODOS os registros? Esta ação não pode ser desfeita.')) {
-                records = [];
-                saveRecords(records);
-                updateRecordsTable();
-                updateSummary();
-                showNotification('Todos os registros foram removidos', 'success');
+        // Exibir confirmação de exclusão
+        function showDeleteConfirmation(id, productName) {
+            itemToDeleteId = id;
+            itemToDelete.textContent = `${productName}`;
+            confirmationModal.classList.add('show');
+        }
+        
+        // Excluir registro
+        function deleteRecord() {
+            const history = JSON.parse(localStorage.getItem('productHistory')) || [];
+            const newHistory = history.filter(item => item.id !== itemToDeleteId);
+            
+            // Salvar no localStorage
+            localStorage.setItem('productHistory', JSON.stringify(newHistory));
+            
+            // Fechar modal
+            confirmationModal.classList.remove('show');
+            
+            // Atualizar exibição
+            updateStatistics(newHistory);
+            displayHistory(newHistory);
+            
+            // Mostrar notificação
+            showNotification('Registro excluído com sucesso!');
+            
+            // Se estava editando o item excluído, cancelar edição
+            if (currentEditId === itemToDeleteId) {
+                cancelEdit();
             }
         }
         
-        // Função para exportar dados para Excel (XLSX)
+        // Limpar campos
+        function clearFields() {
+            productSelect.value = '';
+            sectorSelect.value = '';
+            quantityInput.value = '1';
+            dateInput.value = formattedDate;
+        }
+        
+        // Exportar para Excel
         function exportToExcel() {
-            if (records.length === 0) {
-                showNotification('Nenhum dado para exportar', 'error');
+            const history = JSON.parse(localStorage.getItem('productHistory')) || [];
+            
+            if (history.length === 0) {
+                showNotification('Nenhum dado para exportar!', 'error');
                 return;
             }
             
-            // Preparar os dados para a planilha
+            // Preparar dados para a planilha
             const data = [
-                ['Produto', 'Setor', 'Quantidade', 'Data e Hora', 'Dispositivo'] // Cabeçalhos
+                ['Produto', 'Setor', 'Quantidade', 'Data']
             ];
             
-            // Adicionar os registros
-            records.forEach(record => {
+            history.forEach(item => {
                 data.push([
-                    record.product,
-                    record.sector,
-                    record.quantity,
-                    record.date,
-                    record.device || 'N/A'
+                    item.product,
+                    item.sector,
+                    item.quantity,
+                    item.date
                 ]);
             });
             
             // Criar uma planilha
             const ws = XLSX.utils.aoa_to_sheet(data);
             
-            // Estilizar o cabeçalho
-            for (let i = 0; i < 5; i++) {
-                const cell = XLSX.utils.encode_cell({c: i, r: 0});
-                if (ws[cell]) {
-                    ws[cell].s = { 
-                        font: { bold: true, color: { rgb: "FFFFFF" } }, 
-                        fill: { fgColor: { rgb: "1A5276" } } 
-                    };
-                }
-            }
+            // Estilizar cabeçalho
+            if (!ws['A1'].s) ws['A1'].s = {};
+            if (!ws['B1'].s) ws['B1'].s = {};
+            if (!ws['C1'].s) ws['C1'].s = {};
+            if (!ws['D1'].s) ws['D1'].s = {};
             
-            // Ajustar largura das colunas
-            const colWidths = [
-                { wch: 30 }, // Produto
-                { wch: 30 }, // Setor
-                { wch: 12 }, // Quantidade
-                { wch: 20 }, // Data
-                { wch: 10 }  // Dispositivo
-            ];
-            ws['!cols'] = colWidths;
+            ws['A1'].s = {font: {bold: true}, fill: {fgColor: {rgb: "D9E1F2"}}};
+            ws['B1'].s = {font: {bold: true}, fill: {fgColor: {rgb: "D9E1F2"}}};
+            ws['C1'].s = {font: {bold: true}, fill: {fgColor: {rgb: "D9E1F2"}}};
+            ws['D1'].s = {font: {bold: true}, fill: {fgColor: {rgb: "D9E1F2"}}};
             
-            // Criar uma pasta de trabalho
+            // Criar um workbook
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Registros de Consumo");
+            XLSX.utils.book_append_sheet(wb, ws, 'Controle de Produtos');
             
-            // Gerar o arquivo XLSX
-            const fileName = `controle_higiene_${new Date().toISOString().slice(0, 10)}.xlsx`;
+            // Exportar o arquivo
+            const fileName = `controle_produtos_${new Date().toISOString().slice(0, 10)}.xlsx`;
             XLSX.writeFile(wb, fileName);
             
-            showNotification('Planilha exportada com sucesso!', 'success');
+            showNotification('Dados exportados com sucesso!');
         }
         
-        // Função para ativar aba mobile
-        function activateMobileTab(tabName) {
-            // Atualizar aba ativa
-            document.querySelectorAll('.mobile-tab').forEach(tab => {
-                tab.classList.remove('active');
-                if (tab.getAttribute('data-tab') === tabName) {
-                    tab.classList.add('active');
-                }
-            });
-            
-            // Mostrar seção correspondente
-            if (tabName === 'form') {
-                document.getElementById('form-section').style.display = 'block';
-                document.getElementById('history-section').style.display = 'none';
-                document.getElementById('summary-section').style.display = 'block';
-            } 
-            else if (tabName === 'history') {
-                document.getElementById('form-section').style.display = 'none';
-                document.getElementById('history-section').style.display = 'block';
-                document.getElementById('summary-section').style.display = 'none';
-            }
-            else if (tabName === 'summary') {
-                document.getElementById('form-section').style.display = 'none';
-                document.getElementById('history-section').style.display = 'none';
-                document.getElementById('summary-section').style.display = 'block';
-            }
-        }
+        // Event Listeners
+        saveBtn.addEventListener('click', saveRecord);
+        updateBtn.addEventListener('click', updateRecord);
+        cancelEditBtn.addEventListener('click', cancelEdit);
+        clearBtn.addEventListener('click', () => {
+            clearFields();
+            showNotification('Campos limpos!');
+        });
+        searchBtn.addEventListener('click', loadHistory);
+        exportBtn.addEventListener('click', exportToExcel);
+        confirmDeleteBtn.addEventListener('click', deleteRecord);
+        cancelDeleteBtn.addEventListener('click', () => {
+            confirmationModal.classList.remove('show');
+        });
         
-        // Verificar se é dispositivo móvel
-        function isMobile() {
-            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        }
-        
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', function() {
-            updateCurrentDate();
-            
-            // Atualizar a data a cada minuto
-            setInterval(updateCurrentDate, 60000);
-            
-            // Carregar registros existentes
-            updateRecordsTable();
-            updateSummary();
-            
-            // Configurar botão de salvar
-            document.getElementById('save-btn').addEventListener('click', function() {
-                const product = document.getElementById('product').value;
-                const sector = document.getElementById('sector').value;
-                const quantity = document.getElementById('quantity').value;
-                
-                if (!product) {
-                    showNotification('Selecione um produto', 'error');
-                    return;
-                }
-                
-                if (!sector) {
-                    showNotification('Selecione um setor', 'error');
-                    return;
-                }
-                
-                if (!quantity || quantity < 1) {
-                    showNotification('Informe uma quantidade válida', 'error');
-                    return;
-                }
-                
-                addRecord(product, sector, quantity);
-                
-                // Resetar o formulário
-                clearForm();
-            });
-            
-            // Configurar botão de limpar
-            document.getElementById('clear-btn').addEventListener('click', clearForm);
-            
-            // Configurar botão de exportar
-            document.getElementById('export-btn').addEventListener('click', exportToExcel);
-            
-            // Configurar botão de limpar todos
-            document.getElementById('clear-all-btn').addEventListener('click', clearAllRecords);
-            
-            // Configurar abas mobile
-            document.querySelectorAll('.mobile-tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const tabName = this.getAttribute('data-tab');
-                    activateMobileTab(tabName);
-                });
-            });
-            
-            // Inicializar para mobile
-            if (window.innerWidth < 900) {
-                activateMobileTab('form');
-            }
-            
-            // Mostrar mensagem de armazenamento
-            if (records.length > 0) {
-                const deviceType = isMobile() ? 'celular' : 'computador';
-                showNotification(`${records.length} registros carregados do armazenamento local`, 'info');
+        searchInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                loadHistory();
             }
         });
+        
+        // Carregar histórico ao iniciar
+        loadHistory();
     </script>
 </body>
 </html>
