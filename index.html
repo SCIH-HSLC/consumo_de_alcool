@@ -856,6 +856,9 @@
             }
             
            
+            document.getElementById("myForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Impede o envio padrão do formulário
+
             const record = {
                 product: document.getElementById("product").value,
                 sector: document.getElementById("sector").value,
