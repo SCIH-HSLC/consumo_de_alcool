@@ -655,6 +655,23 @@
     </div>
 
     <script>
+        
+        document.getElementById("id").addEventListener("submit", function(event) {
+        event.preventDefault(); // Impede o envio padrão
+
+        const record = {
+        product: document.getElementById("product").value,
+        sector: document.getElementById("sector").value,
+        quantity: document.getElementById("quantity").value,
+        date: document.getElementById("date").value,
+        "registro-status": document.getElementById("registro-status").value,
+        id: Date.now(),
+        sent: false
+        };
+
+        sendToSheetMonkey(record);
+        });
+
         // Elementos do DOM
         const saveBtn = document.getElementById('save-btn');
         const updateBtn = document.getElementById('update-btn');
@@ -854,23 +871,15 @@
                 showNotification('Por favor, preencha todos os campos!', 'error');
                 return;
             }
-            
-           
-            document.getElementById("myForm").addEventListener("submit", function(event) {
-            event.preventDefault(); // Impede o envio padrão do formulário
 
             const record = {
-                product: document.getElementById("product").value,
-                sector: document.getElementById("sector").value,
-                quantity: document.getElementById("quantity").value,
-                date: document.getElementById("date").value,
-                "registro-status": document.getElementById("registro-status").value,
-                id: Date.now(),
+               id: Date.now(), // ID único para o registro
+                product,
+                sector,
+                quantity,
+                date,
                 sent: false
             };
-
-            sendToSheetMonkey(record);
-            });
 
             
             // Obter histórico atual ou criar novo array
