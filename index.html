@@ -517,10 +517,6 @@ font-size: 1.2rem;
 </div>
 <div class="hospital-info">
 <!--  <p><i class="fas fa-map-marker-alt"></i> Hospital Municipal de Saúde</p> -->
-
-</header>
-<header>
-<p><i class="fas fa-calendar-alt"></i> <span id="current-date"></span></p>
 </div>
 <div class="status-indicator" id="status-indicator">
 <div class="status-dot" id="status-dot"></div>
@@ -528,12 +524,11 @@ font-size: 1.2rem;
 <div class="spinner" id="spinner"></div>
 </div>
 </header>
+
 <div class="main-content">
 <div class="card">
 <h2 class="card-title"><i class="fas fa-calculator"></i> Controle de Produtos</h2>
-<form action="https://api.sheetmonkey.io/form/9qTdVSMErCaMi6T6avZJKm" method="post"
-   id="hygieneForm" class="form-card" onsubmit="return handleFormSubmit(event)">
-   <form id="form">
+<form id="hygieneForm" class="form-card">
 <div class="form-group">
 <label for="product"><i class="fas fa-pump-soap hospital-icon"></i> Produto:</label>
 <select id="product" name="product" required>
@@ -684,7 +679,7 @@ const statusIndicator = document.getElementById('status-indicator');
 const statusDot = document.getElementById('status-dot');
 const statusText = document.getElementById('status-text');
 const spinner = document.getElementById('spinner');
-const form = document.getElementById('form');
+const form = document.getElementById('hygieneForm');
 
 const statusField = document.getElementById("registro-status");
 
@@ -692,461 +687,478 @@ let isUpdating = false;
 
 // Quando clicar no botão "Atualizar"
 updateBtn.addEventListener("click", function () {
-isUpdating = true;
-statusField.value = "Atualizado";
-statusField.style.color = "#007bff"; // azul
+    isUpdating = true;
+    statusField.value = "Atualizado";
+    statusField.style.color = "#007bff";
 });
 
 // Quando clicar no botão "Salvar Registro"
 saveBtn.addEventListener("click", function () {
-isUpdating = false;
-statusField.value = "Registrado";
-statusField.style.color = "#28a745"; // verde
+    isUpdating = false;
+    statusField.value = "Registrado";
+    statusField.style.color = "#28a745";
 });
 
 // Opcional: quando clicar em "Cancelar", resetar o status
-const cancelBtn = document.getElementById("cancel-edit-btn");
-cancelBtn.addEventListener("click", function () {
-statusField.value = "Registrado";
-statusField.style.color = "#28a745";
+cancelEditBtn.addEventListener("click", function () {
+    statusField.value = "Registrado";
+    statusField.style.color = "#28a745";
 });
+
 // Variáveis de estado
 let currentEditId = null;
 let itemToDeleteId = null;
 let isOnline = true;
 let sentRecords = 0;
 
-// Definir data atual como padrão
-const today = new Date();
-const formattedDate = today.toISOString().split('T')[0];
-dateInput.value = formattedDate;
+// Função para obter data atual formatada
+function getTodayDate() {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+}
+
+// Função para formatar data para exibição
+function formatDateForDisplay(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+}
 
 // Formatar e exibir a data atual no cabeçalho
-const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-currentDateElement.textContent = today.toLocaleDateString('pt-BR', options);
+function updateHeaderDate() {
+    const today = new Date();
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    currentDateElement.textContent = today.toLocaleDateString('pt-BR', options);
+}
+
+// Inicializar data no formulário
+function initializeFormDate() {
+    dateInput.value = getTodayDate();
+}
 
 // Verificar status da conexão
 function checkOnlineStatus() {
-isOnline = navigator.onLine;
-updateStatusIndicator();
+    isOnline = navigator.onLine;
+    updateStatusIndicator();
 }
 
 // Atualizar indicador de status
 function updateStatusIndicator() {
-if (isOnline) {
-statusDot.classList.remove('offline');
-statusText.textContent = 'Online';
-statusIndicator.style.background = 'rgba(39, 174, 96, 0.1)';
-} else {
-statusDot.classList.add('offline');
-statusText.textContent = 'Offline';
-statusIndicator.style.background = 'rgba(231, 76, 60, 0.1)';
-}
+    if (isOnline) {
+        statusDot.classList.remove('offline');
+        statusText.textContent = 'Online';
+        statusIndicator.style.background = 'rgba(39, 174, 96, 0.1)';
+    } else {
+        statusDot.classList.add('offline');
+        statusText.textContent = 'Offline';
+        statusIndicator.style.background = 'rgba(231, 76, 60, 0.1)';
+    }
 }
 
 // Carregar histórico do localStorage
 function loadHistory() {
-const history = JSON.parse(localStorage.getItem('productHistory')) || [];
-updateStatistics(history);
-displayHistory(history);
+    const history = JSON.parse(localStorage.getItem('productHistory')) || [];
+    updateStatistics(history);
+    displayHistory(history);
 }
 
 // Atualizar estatísticas
 function updateStatistics(history) {
-totalRecordsElement.textContent = history.length;
-sentRecordsElement.textContent = sentRecords;
+    totalRecordsElement.textContent = history.length;
+    sentRecordsElement.textContent = sentRecords;
 
-// Contar registros de hoje
-const todayRecords = history.filter(item => {
-return item.date === formattedDate;
-}).length;
+    // Contar registros de hoje
+    const todayDate = getTodayDate();
+    const todayRecords = history.filter(item => {
+        return item.date === todayDate;
+    }).length;
 
-todayRecordsElement.textContent = todayRecords;
+    todayRecordsElement.textContent = todayRecords;
 }
 
 // Exibir histórico
 function displayHistory(history) {
-historyList.innerHTML = '';
+    historyList.innerHTML = '';
 
-if (history.length === 0) {
-historyList.innerHTML = `
-                   <div class="empty-history">
-                       <i class="fas fa-inbox"></i>
-                       <h3>Nenhum registro encontrado</h3>
-                       <p>Adicione novos registros para preencher o histórico</p>
-                   </div>
-               `;
-return;
-}
+    if (history.length === 0) {
+        historyList.innerHTML = `
+            <div class="empty-history">
+                <i class="fas fa-inbox"></i>
+                <h3>Nenhum registro encontrado</h3>
+                <p>Adicione novos registros para preencher o histórico</p>
+            </div>
+        `;
+        return;
+    }
 
-// Filtrar se houver busca
-const searchTerm = searchInput.value.toLowerCase();
-const filteredHistory = searchTerm ? 
-history.filter(item => 
-item.product.toLowerCase().includes(searchTerm) || 
-item.sector.toLowerCase().includes(searchTerm)
-) : history;
+    // Filtrar se houver busca
+    const searchTerm = searchInput.value.toLowerCase();
+    const filteredHistory = searchTerm ? 
+        history.filter(item => 
+            item.product.toLowerCase().includes(searchTerm) || 
+            item.sector.toLowerCase().includes(searchTerm)
+        ) : history;
 
-// Ordenar por data mais recente
-filteredHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+    // Ordenar por data mais recente
+    filteredHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-filteredHistory.forEach(item => {
-const itemDate = new Date(item.date);
-const formattedDate = itemDate.toLocaleDateString('pt-BR', {
-day: '2-digit',
-month: '2-digit',
-year: 'numeric'
-});
+    filteredHistory.forEach(item => {
+        const formattedDate = formatDateForDisplay(item.date);
 
-const historyItem = document.createElement('div');
-historyItem.className = `history-item ${currentEditId === item.id ? 'highlight' : ''}`;
-historyItem.dataset.id = item.id;
-historyItem.innerHTML = `
-                   <div class="history-actions">
-                       <div class="action-btn edit-btn" title="Editar registro">
-                           <i class="fas fa-edit"></i>
-                       </div>
-                       <div class="action-btn delete-btn" title="Excluir registro">
-                           <i class="fas fa-trash-alt"></i>
-                       </div>
-                   </div>
-                   <div class="history-item-header">
-                       <span class="product-name">${item.product}</span>
-                       <span class="history-date">${formattedDate} ${item.sent ? '<i class="fas fa-cloud-upload-alt" style="color:#27ae60; margin-left:5px;"></i>' : '<i class="fas fa-exclamation-triangle" style="color:#e74c3c; margin-left:5px;"></i>'}</span>
-                   </div>
-                   <div class="sector">${item.sector}</div>
-                   <div class="quantity">Quantidade: ${item.quantity}</div>
-               `;
-historyList.appendChild(historyItem);
+        const historyItem = document.createElement('div');
+        historyItem.className = `history-item ${currentEditId === item.id ? 'highlight' : ''}`;
+        historyItem.dataset.id = item.id;
+        historyItem.innerHTML = `
+            <div class="history-actions">
+                <div class="action-btn edit-btn" title="Editar registro">
+                    <i class="fas fa-edit"></i>
+                </div>
+                <div class="action-btn delete-btn" title="Excluir registro">
+                    <i class="fas fa-trash-alt"></i>
+                </div>
+            </div>
+            <div class="history-item-header">
+                <span class="product-name">${item.product}</span>
+                <span class="history-date">${formattedDate} ${item.sent ? '<i class="fas fa-cloud-upload-alt" style="color:#27ae60; margin-left:5px;"></i>' : '<i class="fas fa-exclamation-triangle" style="color:#e74c3c; margin-left:5px;"></i>'}</span>
+            </div>
+            <div class="sector">${item.sector}</div>
+            <div class="quantity">Quantidade: ${item.quantity}</div>
+        `;
+        historyList.appendChild(historyItem);
 
-// Adicionar eventos de clique para editar/excluir
-historyItem.querySelector('.edit-btn').addEventListener('click', () => editRecord(item.id));
-historyItem.querySelector('.delete-btn').addEventListener('click', () => showDeleteConfirmation(item.id, item.product));
-});
+        // Adicionar eventos de clique para editar/excluir
+        historyItem.querySelector('.edit-btn').addEventListener('click', () => editRecord(item.id));
+        historyItem.querySelector('.delete-btn').addEventListener('click', () => showDeleteConfirmation(item.id, item.product));
+    });
 }
 
 // Mostrar notificação
 function showNotification(message, type = 'success') {
-notification.querySelector('span').textContent = message;
-notification.className = 'notification';
+    notification.querySelector('span').textContent = message;
+    notification.className = 'notification';
 
-if (type === 'error') {
-notification.classList.add('error');
-} else if (type === 'warning') {
-notification.classList.add('warning');
-}
+    if (type === 'error') {
+        notification.classList.add('error');
+    } else if (type === 'warning') {
+        notification.classList.add('warning');
+    }
 
-notification.classList.add('show');
+    notification.classList.add('show');
 
-setTimeout(() => {
-notification.classList.remove('show');
-}, 3000);
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 3000);
 }
 
 // Salvar registro
 function saveRecord(e) {
-e.preventDefault();
+    e.preventDefault();
 
-const product = productSelect.value;
-const sector = sectorSelect.value;
-const quantity = quantityInput.value;
-const date = dateInput.value;
+    const product = productSelect.value;
+    const sector = sectorSelect.value;
+    const quantity = quantityInput.value;
+    const date = dateInput.value;
+    const status = statusField.value;
 
-if (!product || !sector || !quantity || !date) {
-showNotification('Por favor, preencha todos os campos!', 'error');
-return;
-}
+    if (!product || !sector || !quantity || !date) {
+        showNotification('Por favor, preencha todos os campos!', 'error');
+        return;
+    }
 
-const record = {
-        product: document.getElementById("product").value,
-        sector: document.getElementById("sector").value,
-        quantity: document.getElementById("quantity").value,
-        date: document.getElementById("date").value,
-        "registro-status": document.getElementById("registro-status").value,
-         id: Date.now(),
+    const record = {
+        product,
+        sector,
+        quantity,
+        date,
+        "registro-status": status,
+        id: Date.now(),
         sent: false
-};
+    };
 
-// Obter histórico atual ou criar novo array
-const history = JSON.parse(localStorage.getItem('productHistory')) || [];
+    // Obter histórico atual ou criar novo array
+    const history = JSON.parse(localStorage.getItem('productHistory')) || [];
 
-// Adicionar novo registro
-history.push(record);
+    // Adicionar novo registro
+    history.push(record);
 
-// Salvar no localStorage
-localStorage.setItem('productHistory', JSON.stringify(history));
+    // Salvar no localStorage
+    localStorage.setItem('productHistory', JSON.stringify(history));
 
-// Atualizar exibição
-updateStatistics(history);
-displayHistory(history);
+    // Atualizar exibição
+    updateStatistics(history);
+    displayHistory(history);
 
-// Enviar para SheetMonkey se estiver online
-if (isOnline) {
-sendToSheetMonkey(record);
-} else {
-showNotification('Registro salvo localmente (offline). Será enviado quando a conexão for restaurada.', 'warning');
-}
+    // Enviar para SheetMonkey se estiver online
+    if (isOnline) {
+        sendToSheetMonkey(record);
+    } else {
+        showNotification('Registro salvo localmente (offline). Será enviado quando a conexão for restaurada.', 'warning');
+    }
 
-// Limpar campos
-clearFields();
+    // Limpar campos
+    clearFields();
 }
 
 // Enviar dados para SheetMonkey
-        async function sendToSheetMonkey(record) {
-            spinner.style.display = 'inline-block';
-            
-           async function sendToSheetMonkey(record) {
-       async function sendToSheetMonkey(record) {
-spinner.style.display = 'inline-block';
-
-try {
-const response = await fetch('https://api.sheetmonkey.io/form/9qTdVSMErCaMi6T6avZJKm', {
-method: 'POST',
-headers: {
-'Content-Type': 'application/json'
-},
-body: JSON.stringify({
-product: record.product,
-sector: record.sector,
-quantity: record.quantity,
+async function sendToSheetMonkey(record) {
+    spinner.style.display = 'inline-block';
+    
+    try {
+        const response = await fetch('https://api.sheetmonkey.io/form/9qTdVSMErCaMi6T6avZJKm', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                product: record.product,
+                sector: record.sector,
+                quantity: record.quantity,
                 date: record.date,
-                "registro-status": record["registro-status"] || "Registrado" // Adicionado aqui
-                date: record.date, // mantém como estava
                 "registro-status": record["registro-status"] || "Registrado"
-})
-});
+            })
+        });
 
-if (response.ok) {
-const history = JSON.parse(localStorage.getItem('productHistory')) || [];
-const recordIndex = history.findIndex(item => item.id === record.id);
+        if (response.ok) {
+            const history = JSON.parse(localStorage.getItem('productHistory')) || [];
+            const recordIndex = history.findIndex(item => item.id === record.id);
 
-if (recordIndex !== -1) {
-history[recordIndex].sent = true;
-localStorage.setItem('productHistory', JSON.stringify(history));
-displayHistory(history);
+            if (recordIndex !== -1) {
+                history[recordIndex].sent = true;
+                localStorage.setItem('productHistory', JSON.stringify(history));
+                displayHistory(history);
 
-sentRecords++;
-sentRecordsElement.textContent = sentRecords;
-                
+                sentRecords++;
+                sentRecordsElement.textContent = sentRecords;
+            }
+        } else {
+            throw new Error('Falha no envio');
+        }
+    } catch (error) {
+        console.error('Erro ao enviar para SheetMonkey:', error);
+        showNotification('Erro ao enviar para a planilha. Os dados serão enviados quando a conexão for restaurada.', 'error');
+    } finally {
+        spinner.style.display = 'none';
+    }
 }
-} else {
-throw new Error('Falha no envio');
-}
-} catch (error) {
-console.error('Erro ao enviar para SheetMonkey:', error);
-showNotification('Erro ao enviar para a planilha. Os dados serão enviados quando a conexão for restaurada.', 'error');
-} finally {
-spinner.style.display = 'none';
-}
-}
-
-
 
 // Verificar e enviar registros pendentes
 function sendPendingRecords() {
-const history = JSON.parse(localStorage.getItem('productHistory')) || [];
-const pendingRecords = history.filter(record => !record.sent);
+    const history = JSON.parse(localStorage.getItem('productHistory')) || [];
+    const pendingRecords = history.filter(record => !record.sent);
 
-if (pendingRecords.length > 0 && isOnline) {
-showNotification(`Enviando ${pendingRecords.length} registro(s) pendente(s)...`, 'warning');
+    if (pendingRecords.length > 0 && isOnline) {
+        showNotification(`Enviando ${pendingRecords.length} registro(s) pendente(s)...`, 'warning');
 
-pendingRecords.forEach(record => {
-sendToSheetMonkey(record);
-});
-}
+        pendingRecords.forEach(record => {
+            sendToSheetMonkey(record);
+        });
+    }
 }
 
 // Editar registro
 function editRecord(id) {
-const history = JSON.parse(localStorage.getItem('productHistory')) || [];
-const record = history.find(item => item.id === id);
+    const history = JSON.parse(localStorage.getItem('productHistory')) || [];
+    const record = history.find(item => item.id === id);
 
-if (record) {
-// Preencher formulário com dados do registro
-productSelect.value = record.product;
-sectorSelect.value = record.sector;
-quantityInput.value = record.quantity;
-dateInput.value = record.date;
+    if (record) {
+        // Preencher formulário com dados do registro
+        productSelect.value = record.product;
+        sectorSelect.value = record.sector;
+        quantityInput.value = record.quantity;
+        dateInput.value = record.date;
+        statusField.value = record["registro-status"];
 
-// Ativar modo edição
-currentEditId = id;
+        // Ativar modo edição
+        currentEditId = id;
 
-// Mostrar botões de edição
-saveBtn.style.display = 'none';
-updateBtn.style.display = 'flex';
-cancelEditBtn.style.display = 'flex';
+        // Mostrar botões de edição
+        saveBtn.style.display = 'none';
+        updateBtn.style.display = 'flex';
+        cancelEditBtn.style.display = 'flex';
 
-// Destacar item sendo editado
-displayHistory(history);
+        // Destacar item sendo editado
+        displayHistory(history);
 
-showNotification('Modo de edição ativado. Atualize os dados conforme necessário.', 'warning');
-}
+        showNotification('Modo de edição ativado. Atualize os dados conforme necessário.', 'warning');
+    }
 }
 
 // Atualizar registro
 function updateRecord() {
-const history = JSON.parse(localStorage.getItem('productHistory')) || [];
-const recordIndex = history.findIndex(item => item.id === currentEditId);
+    const history = JSON.parse(localStorage.getItem('productHistory')) || [];
+    const recordIndex = history.findIndex(item => item.id === currentEditId);
 
-if (recordIndex !== -1) {
-// Atualizar dados do registro
-history[recordIndex].product = productSelect.value;
-history[recordIndex].sector = sectorSelect.value;
-history[recordIndex].quantity = quantityInput.value;
-history[recordIndex].date = dateInput.value;
-history[recordIndex].sent = false; // Marcar como não enviado após atualização
+    if (recordIndex !== -1) {
+        // Atualizar dados do registro
+        history[recordIndex].product = productSelect.value;
+        history[recordIndex].sector = sectorSelect.value;
+        history[recordIndex].quantity = quantityInput.value;
+        history[recordIndex].date = dateInput.value;
+        history[recordIndex]["registro-status"] = statusField.value;
+        history[recordIndex].sent = false; // Marcar como não enviado após atualização
 
-// Salvar no localStorage
-localStorage.setItem('productHistory', JSON.stringify(history));
+        // Salvar no localStorage
+        localStorage.setItem('productHistory', JSON.stringify(history));
 
-// Atualizar exibição
-updateStatistics(history);
-displayHistory(history);
+        // Atualizar exibição
+        updateStatistics(history);
+        displayHistory(history);
 
-// Mostrar notificação
-showNotification('Registro atualizado com sucesso!');
+        // Mostrar notificação
+        showNotification('Registro atualizado com sucesso!');
 
-// Sair do modo edição
-cancelEdit();
+        // Sair do modo edição
+        cancelEdit();
 
-// Enviar atualização se estiver online
-if (isOnline) {
-sendToSheetMonkey(history[recordIndex]);
-}
-}
+        // Enviar atualização se estiver online
+        if (isOnline) {
+            sendToSheetMonkey(history[recordIndex]);
+        }
+    }
 }
 
 // Cancelar edição
 function cancelEdit() {
-currentEditId = null;
+    currentEditId = null;
 
-// Mostrar botão de salvar
-saveBtn.style.display = 'flex';
-updateBtn.style.display = 'none';
-cancelEditBtn.style.display = 'none';
+    // Mostrar botão de salvar
+    saveBtn.style.display = 'flex';
+    updateBtn.style.display = 'none';
+    cancelEditBtn.style.display = 'none';
 
-// Limpar campos
-clearFields();
+    // Limpar campos
+    clearFields();
 
-// Atualizar histórico para remover destaque
-loadHistory();
+    // Atualizar histórico para remover destaque
+    loadHistory();
 }
 
 // Exibir confirmação de exclusão
 function showDeleteConfirmation(id, productName) {
-itemToDeleteId = id;
-itemToDelete.textContent = `${productName}`;
-confirmationModal.classList.add('show');
+    itemToDeleteId = id;
+    itemToDelete.textContent = `${productName}`;
+    confirmationModal.classList.add('show');
 }
 
 // Excluir registro
 function deleteRecord() {
-const history = JSON.parse(localStorage.getItem('productHistory')) || [];
-const recordIndex = history.findIndex(item => item.id === itemToDeleteId);
+    const history = JSON.parse(localStorage.getItem('productHistory')) || [];
+    const recordIndex = history.findIndex(item => item.id === itemToDeleteId);
 
-if (recordIndex !== -1) {
-// Verificar se o registro foi enviado
-const wasSent = history[recordIndex].sent;
+    if (recordIndex !== -1) {
+        // Verificar se o registro foi enviado
+        const wasSent = history[recordIndex].sent;
 
-// Remover registro
-history.splice(recordIndex, 1);
+        // Remover registro
+        history.splice(recordIndex, 1);
 
-// Salvar no localStorage
-localStorage.setItem('productHistory', JSON.stringify(history));
+        // Salvar no localStorage
+        localStorage.setItem('productHistory', JSON.stringify(history));
 
-// Fechar modal
-confirmationModal.classList.remove('show');
+        // Fechar modal
+        confirmationModal.classList.remove('show');
 
-// Atualizar exibição
-updateStatistics(history);
-displayHistory(history);
+        // Atualizar exibição
+        updateStatistics(history);
+        displayHistory(history);
 
-// Atualizar contador de registros enviados
-if (wasSent) {
-sentRecords = Math.max(0, sentRecords - 1);
-sentRecordsElement.textContent = sentRecords;
-}
+        // Atualizar contador de registros enviados
+        if (wasSent) {
+            sentRecords = Math.max(0, sentRecords - 1);
+            sentRecordsElement.textContent = sentRecords;
+        }
 
-// Mostrar notificação
-showNotification('Registro excluído com sucesso!');
+        // Mostrar notificação
+        showNotification('Registro excluído com sucesso!');
 
-// Se estava editando o item excluído, cancelar edição
-if (currentEditId === itemToDeleteId) {
-cancelEdit();
-}
-}
+        // Se estava editando o item excluído, cancelar edição
+        if (currentEditId === itemToDeleteId) {
+            cancelEdit();
+        }
+    }
 }
 
 // Limpar campos
 function clearFields() {
-productSelect.value = '';
-sectorSelect.value = '';
-quantityInput.value = '1';
-dateInput.value = formattedDate;
+    const today = new Date();
+    const todayFormatted = today.toISOString().split('T')[0];
+    
+    productSelect.value = '';
+    sectorSelect.value = '';
+    quantityInput.value = '1';
+    dateInput.value = todayFormatted;
+    statusField.value = "Registrado";
+    statusField.style.color = "#28a745";
 }
 
 // Exportar para Excel
 function exportToExcel() {
-const history = JSON.parse(localStorage.getItem('productHistory')) || [];
+    const history = JSON.parse(localStorage.getItem('productHistory')) || [];
 
-if (history.length === 0) {
-showNotification('Nenhum dado para exportar!', 'error');
-return;
-}
+    if (history.length === 0) {
+        showNotification('Nenhum dado para exportar!', 'error');
+        return;
+    }
 
-// Preparar dados para a planilha
-const data = [
-['Produto', 'Setor', 'Quantidade', 'Data', 'Enviado']
-];
+    // Preparar dados para a planilha
+    const data = [
+        ['Produto', 'Setor', 'Quantidade', 'Data', 'Status', 'Enviado']
+    ];
 
-history.forEach(item => {
-data.push([
-item.product,
-item.sector,
-item.quantity,
-item.date,
-item.sent ? 'Sim' : 'Não'
-]);
-});
+    history.forEach(item => {
+        data.push([
+            item.product,
+            item.sector,
+            item.quantity,
+            item.date,
+            item["registro-status"],
+            item.sent ? 'Sim' : 'Não'
+        ]);
+    });
 
-// Criar uma planilha
-const ws = XLSX.utils.aoa_to_sheet(data);
+    // Criar uma planilha
+    const ws = XLSX.utils.aoa_to_sheet(data);
 
-// Estilizar cabeçalho
-if (!ws['A1'].s) ws['A1'].s = {};
-if (!ws['B1'].s) ws['B1'].s = {};
-if (!ws['C1'].s) ws['C1'].s = {};
-if (!ws['D1'].s) ws['D1'].s = {};
-if (!ws['E1'].s) ws['E1'].s = {};
+    // Estilizar cabeçalho
+    if (!ws['A1'].s) ws['A1'].s = {};
+    if (!ws['B1'].s) ws['B1'].s = {};
+    if (!ws['C1'].s) ws['C1'].s = {};
+    if (!ws['D1'].s) ws['D1'].s = {};
+    if (!ws['E1'].s) ws['E1'].s = {};
+    if (!ws['F1'].s) ws['F1'].s = {};
 
-ws['A1'].s = {font: {bold: true}, fill: {fgColor: {rgb: "D9E1F2"}}};
-ws['B1'].s = {font: {bold: true}, fill: {fgColor: {rgb: "D9E1F2"}}};
-ws['C1'].s = {font: {bold: true}, fill: {fgColor: {rgb: "D9E1F2"}}};
-ws['D1'].s = {font: {bold: true}, fill: {fgColor: {rgb: "D9E1F2"}}};
-ws['E1'].s = {font: {bold: true}, fill: {fgColor: {rgb: "D9E1F2"}}};
+    ws['A1'].s = {font: {bold: true}, fill: {fgColor: {rgb: "D9E1F2"}}};
+    ws['B1'].s = {font: {bold: true}, fill: {fgColor: {rgb: "D9E1F2"}}};
+    ws['C1'].s = {font: {bold: true}, fill: {fgColor: {rgb: "D9E1F2"}}};
+    ws['D1'].s = {font: {bold: true}, fill: {fgColor: {rgb: "D9E1F2"}}};
+    ws['E1'].s = {font: {bold: true}, fill: {fgColor: {rgb: "D9E1F2"}}};
+    ws['F1'].s = {font: {bold: true}, fill: {fgColor: {rgb: "D9E1F2"}}};
 
-// Criar um workbook
-const wb = XLSX.utils.book_new();
-XLSX.utils.book_append_sheet(wb, ws, 'Controle de Produtos');
+    // Criar um workbook
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Controle de Produtos');
 
-// Exportar o arquivo
-const fileName = `controle_produtos_${new Date().toISOString().slice(0, 10)}.xlsx`;
-XLSX.writeFile(wb, fileName);
+    // Exportar o arquivo
+    const fileName = `controle_produtos_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    XLSX.writeFile(wb, fileName);
 
-showNotification('Dados exportados com sucesso!');
+    showNotification('Dados exportados com sucesso!');
 }
 
 // Alternar modo offline
 function toggleOfflineMode() {
-isOnline = !isOnline;
-updateStatusIndicator();
+    isOnline = !isOnline;
+    updateStatusIndicator();
 
-if (isOnline) {
-showNotification('Modo online ativado. Enviando registros pendentes...', 'warning');
-sendPendingRecords();
-} else {
-showNotification('Modo offline ativado. Os registros serão salvos localmente.', 'warning');
-}
+    if (isOnline) {
+        showNotification('Modo online ativado. Enviando registros pendentes...', 'warning');
+        sendPendingRecords();
+    } else {
+        showNotification('Modo offline ativado. Os registros serão salvos localmente.', 'warning');
+    }
 }
 
 // Event Listeners
@@ -1154,43 +1166,48 @@ form.addEventListener('submit', saveRecord);
 updateBtn.addEventListener('click', updateRecord);
 cancelEditBtn.addEventListener('click', cancelEdit);
 clearBtn.addEventListener('click', () => {
-clearFields();
-showNotification('Campos limpos!');
+    clearFields();
+    showNotification('Campos limpos!');
 });
 searchBtn.addEventListener('click', loadHistory);
 exportBtn.addEventListener('click', exportToExcel);
 confirmDeleteBtn.addEventListener('click', deleteRecord);
 cancelDeleteBtn.addEventListener('click', () => {
-confirmationModal.classList.remove('show');
+    confirmationModal.classList.remove('show');
 });
 offlineBtn.addEventListener('click', toggleOfflineMode);
 
 searchInput.addEventListener('keyup', (e) => {
-if (e.key === 'Enter') {
-loadHistory();
-}
+    if (e.key === 'Enter') {
+        loadHistory();
+    } else {
+        loadHistory(); // Filtra ao digitar
+    }
 });
 
 // Verificar conexão ao carregar e durante mudanças
 window.addEventListener('load', () => {
-checkOnlineStatus();
-// Contar registros enviados
-const history = JSON.parse(localStorage.getItem('productHistory')) || [];
-sentRecords = history.filter(item => item.sent).length;
-loadHistory();
+    checkOnlineStatus();
+    updateHeaderDate();
+    initializeFormDate();
+    
+    // Contar registros enviados
+    const history = JSON.parse(localStorage.getItem('productHistory')) || [];
+    sentRecords = history.filter(item => item.sent).length;
+    loadHistory();
 });
 
 window.addEventListener('online', () => {
-isOnline = true;
-updateStatusIndicator();
-showNotification('Conexão restaurada. Enviando registros pendentes...', 'warning');
-sendPendingRecords();
+    isOnline = true;
+    updateStatusIndicator();
+    showNotification('Conexão restaurada. Enviando registros pendentes...', 'warning');
+    sendPendingRecords();
 });
 
 window.addEventListener('offline', () => {
-isOnline = false;
-updateStatusIndicator();
-showNotification('Você está offline. Os registros serão salvos localmente.', 'warning');
+    isOnline = false;
+    updateStatusIndicator();
+    showNotification('Você está offline. Os registros serão salvos localmente.', 'warning');
 });
 </script>
 </body>
