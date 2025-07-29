@@ -580,7 +580,12 @@
                         <label for="date"><i class="fas fa-calendar-alt hospital-icon"></i> Data:</label>
                         <input type="date" id="date" name="date" required>
                     </div>
-                    
+
+                    <div class="form-group">
+                        <label for="registro-status"><i class="fas fa-info-circle hospital-icon"></i> Status do Registro:</label>
+                        <input type="text" id="registro-status" name="registro-status" value="Registrado" readonly style="background-color: #f9f9f9; font-weight: bold; color: #333;">
+                    </div>
+
                     <div class="btn-container">
                         <button id="save-btn" type="submit"><i class="fas fa-save"></i> Salvar Registro</button>
                         <button id="update-btn" class="btn-edit" style="display:none;"><i class="fas fa-edit"></i> Atualizar</button>
@@ -679,6 +684,30 @@
         const spinner = document.getElementById('spinner');
         const form = document.getElementById('form');
         
+       const statusField = document.getElementById("registro-status");
+
+       let isUpdating = false;
+
+    // Quando clicar no botão "Atualizar"
+        updateBtn.addEventListener("click", function () {
+        isUpdating = true;
+        statusField.value = "Atualizado";
+        statusField.style.color = "#007bff"; // azul
+    });
+
+    // Quando clicar no botão "Salvar Registro"
+    saveBtn.addEventListener("click", function () {
+        isUpdating = false;
+        statusField.value = "Registrado";
+        statusField.style.color = "#28a745"; // verde
+    });
+
+    // Opcional: quando clicar em "Cancelar", resetar o status
+        const cancelBtn = document.getElementById("cancel-edit-btn");
+        cancelBtn.addEventListener("click", function () {
+        statusField.value = "Registrado";
+        statusField.style.color = "#28a745";
+    });
         // Variáveis de estado
         let currentEditId = null;
         let itemToDeleteId = null;
