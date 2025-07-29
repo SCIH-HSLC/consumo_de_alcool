@@ -889,10 +889,7 @@
         }
         
         // Enviar dados para SheetMonkey
-        async function sendToSheetMonkey(record) {
-            spinner.style.display = 'inline-block';
-            
-           async function sendToSheetMonkey(record) {
+       async function sendToSheetMonkey(record) {
     spinner.style.display = 'inline-block';
     
     try {
@@ -905,8 +902,8 @@
                 product: record.product,
                 sector: record.sector,
                 quantity: record.quantity,
-                date: record.date,
-                "registro-status": record["registro-status"] || "Registrado" // Adicionado aqui
+                date: record.date, // mantém como estava
+                "registro-status": record["registro-status"] || "Registrado"
             })
         });
         
@@ -921,7 +918,6 @@
                 
                 sentRecords++;
                 sentRecordsElement.textContent = sentRecords;
-                
             }
         } else {
             throw new Error('Falha no envio');
@@ -933,6 +929,7 @@
         spinner.style.display = 'none';
     }
 }
+
 
         
         // Verificar e enviar registros pendentes
