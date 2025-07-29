@@ -855,14 +855,20 @@
                 return;
             }
             
+           
             const record = {
-                id: Date.now(), // ID único para o registro
-                product,
-                sector,
-                quantity,
-                date,
+                product: document.getElementById("product").value,
+                sector: document.getElementById("sector").value,
+                quantity: document.getElementById("quantity").value,
+                date: document.getElementById("date").value,
+                "registro-status": document.getElementById("registro-status").value,
+                id: Date.now(),
                 sent: false
             };
+
+            sendToSheetMonkey(record);
+            });
+
             
             // Obter histórico atual ou criar novo array
             const history = JSON.parse(localStorage.getItem('productHistory')) || [];
