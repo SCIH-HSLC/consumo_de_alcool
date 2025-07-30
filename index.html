@@ -516,9 +516,6 @@ font-size: 1.2rem;
 <p>Sistema de gestão de insumos e produtos de higiene</p>
 </div>
 </div>
-    <div class="hospital-info">
-                <p><i class="fas fa-calendar-alt"></i> <span id="current-date"></span></p>
-            </div>
 <div class="status-indicator" id="status-indicator">
 <div class="status-dot" id="status-dot"></div>
 <span id="status-text">Online</span>
@@ -693,17 +690,13 @@ let itemToDeleteId = null;
 let isOnline = true;
 let sentRecords = 0;
 
-// Seleciona o campo de data
-const dateInput = document.getElementById("dateInput");
-const currentDateElement = document.getElementById("currentDate"); // caso use no cabeçalho
-
-// Função para obter data atual no formato yyyy-mm-dd
+// Função para obter data atual formatada
 function getTodayDate() {
 const today = new Date();
 return today.toISOString().split('T')[0];
 }
 
-// Função para formatar data para exibição (dd/mm/aaaa)
+// Função para formatar data para exibição
 function formatDateForDisplay(dateStr) {
 const date = new Date(dateStr);
 return date.toLocaleDateString('pt-BR', {
@@ -713,25 +706,17 @@ year: 'numeric'
 });
 }
 
-// Atualizar data no cabeçalho (se você usa isso)
+// Atualizar data no cabeçalho
 function updateHeaderDate() {
 const today = new Date();
 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-if (currentDateElement) {
 currentDateElement.textContent = today.toLocaleDateString('pt-BR', options);
 }
-}
 
-// Inicializar campo de data com data de hoje
+// Inicializar data no formulário
 function initializeFormDate() {
-if (dateInput && !dateInput.value) {
 dateInput.value = getTodayDate();
 }
-}
-
-// Chamada da função no carregamento
-initializeFormDate();
-
 
 // Verificar status da conexão
 function checkOnlineStatus() {
@@ -867,7 +852,8 @@ const record = {
 product,
 sector,
 quantity,
-date, // Usa a data do campo (pode ser alterada pelo usuário)
+        date,
+        date, // Usa a data do campo (pode ser alterada pelo usuário)
 "registro-status": status,
 id: Date.now(),
 sent: false
@@ -966,7 +952,8 @@ if (record) {
 productSelect.value = record.product;
 sectorSelect.value = record.sector;
 quantityInput.value = record.quantity;
-dateInput.value = record.date; // Mantém a data original
+        dateInput.value = record.date;
+        dateInput.value = record.date; // Mantém a data original
 
 // Atualizar status para "Atualizado"
 statusField.value = "Atualizado";
@@ -997,7 +984,8 @@ if (recordIndex !== -1) {
 history[recordIndex].product = productSelect.value;
 history[recordIndex].sector = sectorSelect.value;
 history[recordIndex].quantity = quantityInput.value;
-history[recordIndex].date = dateInput.value; // Mantém a data que estava no campo (original ou alterada)
+        history[recordIndex].date = dateInput.value;
+        history[recordIndex].date = dateInput.value; // Mantém a data que estava no campo (original ou alterada)
 history[recordIndex]["registro-status"] = "Atualizado"; // Forçar status Atualizado
 history[recordIndex].sent = false; // Marcar como não enviado após atualização
 
@@ -1087,7 +1075,8 @@ function clearFields() {
 productSelect.value = '';
 sectorSelect.value = '';
 quantityInput.value = '1';
-dateInput.value = getTodayDate(); // Sempre data atual ao limpar
+    dateInput.value = getTodayDate(); // Sempre data atual
+    dateInput.value = getTodayDate(); // Sempre data atual ao limpar
 statusField.value = "Registrado";
 statusField.style.color = "#28a745";
 }
