@@ -516,9 +516,9 @@ font-size: 1.2rem;
 <p>Sistema de gestão de insumos e produtos de higiene</p>
 </div>
 </div>
-<div class="hospital-info">
-<p><i class="fas fa-calendar-alt"></i> <span id="current-date"></span></p>
-</div>
+    <div class="hospital-info">
+                <p><i class="fas fa-calendar-alt"></i> <span id="current-date"></span></p>
+            </div>
 <div class="status-indicator" id="status-indicator">
 <div class="status-dot" id="status-dot"></div>
 <span id="status-text">Online</span>
@@ -696,17 +696,14 @@ let sentRecords = 0;
 // Seleciona o campo de data
 const dateInput = document.getElementById("dateInput");
 const currentDateElement = document.getElementById("currentDate"); // caso use no cabeçalho
-const currentDateElement = document.getElementById("current-date");
 
 // Função para obter data atual no formato yyyy-mm-dd
-// Função para obter data atual no formato yyyy-mm-dd (para o input)
 function getTodayDate() {
 const today = new Date();
 return today.toISOString().split('T')[0];
 }
 
 // Função para formatar data para exibição (dd/mm/aaaa)
-// Função para formatar data como dd/mm/aaaa (para exibição)
 function formatDateForDisplay(dateStr) {
 const date = new Date(dateStr);
 return date.toLocaleDateString('pt-BR', {
@@ -717,7 +714,6 @@ year: 'numeric'
 }
 
 // Atualizar data no cabeçalho (se você usa isso)
-// Atualiza o span com a data atual formatada (exibição no topo)
 function updateHeaderDate() {
 const today = new Date();
 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -727,7 +723,6 @@ currentDateElement.textContent = today.toLocaleDateString('pt-BR', options);
 }
 
 // Inicializar campo de data com data de hoje
-// Preenche o campo de data do formulário com a data de hoje
 function initializeFormDate() {
 if (dateInput && !dateInput.value) {
 dateInput.value = getTodayDate();
@@ -735,10 +730,7 @@ dateInput.value = getTodayDate();
 }
 
 // Chamada da função no carregamento
-// Chama as funções ao carregar
 initializeFormDate();
-updateHeaderDate();
-
 
 
 // Verificar status da conexão
