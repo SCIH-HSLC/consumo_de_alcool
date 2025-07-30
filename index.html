@@ -188,7 +188,30 @@ const statusDot = document.getElementById('status-dot');
 const statusText = document.getElementById('status-text');
 const spinner = document.getElementById('spinner');
 const form = document.getElementById('hygieneForm');
+
 const statusField = document.getElementById("registro-status");
+
+let isUpdating = false;
+
+// Quando clicar no botão "Atualizar"
+updateBtn.addEventListener("click", function () {
+    isUpdating = true;
+    statusField.value = "Atualizado";
+    statusField.style.color = "#007bff";
+});
+
+// Quando clicar no botão "Salvar Registro"
+saveBtn.addEventListener("click", function () {
+    isUpdating = false;
+    statusField.value = "Registrado";
+    statusField.style.color = "#28a745";
+});
+
+// Opcional: quando clicar em "Cancelar", resetar o status
+cancelEditBtn.addEventListener("click", function () {
+    statusField.value = "Registrado";
+    statusField.style.color = "#28a745";
+});
 
 // Variáveis de estado
 let currentEditId = null;
@@ -196,33 +219,14 @@ let itemToDeleteId = null;
 let isOnline = true;
 let sentRecords = 0;
 
-// Função para obter data atual formatada
-function getTodayDate() {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-}
+// Definir data atual como padrão
+const today = new Date();
+const formattedDate = today.toISOString().split('T')[0];
+dateInput.value = formattedDate;
 
-// Função para formatar data para exibição
-function formatDateForDisplay(dateStr) {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    });
-}
-
-// Atualizar data no cabeçalho
-function updateHeaderDate() {
-    const today = new Date();
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    currentDateElement.textContent = today.toLocaleDateString('pt-BR', options);
-}
-
-// Inicializar data no formulário
-function initializeFormDate() {
-    dateInput.value = getTodayDate();
-}
+// Formatar e exibir a data atual no cabeçalho
+const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+currentDateElement.textContent = today.toLocaleDateString('pt-BR', options);
 
 // Verificar status da conexão
 function checkOnlineStatus() {
@@ -256,9 +260,8 @@ function updateStatistics(history) {
     sentRecordsElement.textContent = sentRecords;
 
     // Contar registros de hoje
-    const todayDate = getTodayDate();
     const todayRecords = history.filter(item => {
-        return item.date === todayDate;
+        return item.date === formattedDate;
     }).length;
 
     todayRecordsElement.textContent = todayRecords;
@@ -291,7 +294,12 @@ function displayHistory(history) {
     filteredHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     filteredHistory.forEach(item => {
-        const formattedDate = formatDateForDisplay(item.date);
+        const itemDate = new Date(item.date);
+        const formattedDate = itemDate.toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
 
         const historyItem = document.createElement('div');
         historyItem.className = `history-item ${currentEditId === item.id ? 'highlight' : ''}`;
@@ -311,7 +319,6 @@ function displayHistory(history) {
             </div>
             <div class="sector">${item.sector}</div>
             <div class="quantity">Quantidade: ${item.quantity}</div>
-            <div class="status">Status: ${item["registro-status"]}</div>
         `;
         historyList.appendChild(historyItem);
 
@@ -358,7 +365,7 @@ function saveRecord(e) {
         product,
         sector,
         quantity,
-        date, // Usa a data do campo (pode ser alterada pelo usuário)
+        date,
         "registro-status": status,
         id: Date.now(),
         sent: false
@@ -386,9 +393,6 @@ function saveRecord(e) {
 
     // Limpar campos
     clearFields();
-    
-    // Mostrar notificação
-    showNotification('Registro salvo com sucesso!');
 }
 
 // Enviar dados para SheetMonkey
@@ -406,7 +410,7 @@ async function sendToSheetMonkey(record) {
                 sector: record.sector,
                 quantity: record.quantity,
                 date: record.date,
-                "registro-status": record["registro-status"]
+                "registro-status": record["registro-status"] || "Registrado"
             })
         });
 
@@ -457,11 +461,8 @@ function editRecord(id) {
         productSelect.value = record.product;
         sectorSelect.value = record.sector;
         quantityInput.value = record.quantity;
-        dateInput.value = record.date; // Mantém a data original
-        
-        // Atualizar status para "Atualizado"
-        statusField.value = "Atualizado";
-        statusField.style.color = "#007bff";
+        dateInput.value = record.date;
+        statusField.value = record["registro-status"];
 
         // Ativar modo edição
         currentEditId = id;
@@ -488,8 +489,8 @@ function updateRecord() {
         history[recordIndex].product = productSelect.value;
         history[recordIndex].sector = sectorSelect.value;
         history[recordIndex].quantity = quantityInput.value;
-        history[recordIndex].date = dateInput.value; // Mantém a data que estava no campo (original ou alterada)
-        history[recordIndex]["registro-status"] = "Atualizado"; // Forçar status Atualizado
+        history[recordIndex].date = dateInput.value;
+        history[recordIndex]["registro-status"] = statusField.value;
         history[recordIndex].sent = false; // Marcar como não enviado após atualização
 
         // Salvar no localStorage
@@ -578,7 +579,7 @@ function clearFields() {
     productSelect.value = '';
     sectorSelect.value = '';
     quantityInput.value = '1';
-    dateInput.value = getTodayDate(); // Sempre data atual ao limpar
+    dateInput.value = formattedDate;
     statusField.value = "Registrado";
     statusField.style.color = "#28a745";
 }
@@ -677,9 +678,6 @@ searchInput.addEventListener('keyup', (e) => {
 // Verificar conexão ao carregar e durante mudanças
 window.addEventListener('load', () => {
     checkOnlineStatus();
-    updateHeaderDate(); // Adicionada chamada faltante
-    initializeFormDate();
-    
     // Contar registros enviados
     const history = JSON.parse(localStorage.getItem('productHistory')) || [];
     sentRecords = history.filter(item => item.sent).length;
@@ -701,4 +699,3 @@ window.addEventListener('offline', () => {
 </script>
 </body>
 </html>
-
