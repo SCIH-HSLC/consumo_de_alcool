@@ -693,45 +693,22 @@ let itemToDeleteId = null;
 let isOnline = true;
 let sentRecords = 0;
 
-const dateInput = document.getElementById("dateInput");
-const currentDateElement = document.getElementById("current-date");
+  // Variáveis de estado
+        let currentEditId = null;
+        let itemToDeleteId = null;
+        let isOnline = true;
+        let editsRecords = 0;
+        let activeRecords = 0;
+        let activeTab = 'history';
 
-// Função para obter data atual no formato yyyy-mm-dd (para o input)
-function getTodayDate() {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-}
+        // Definir data atual como padrão
+        const today = new Date();
+        const formattedDate = today.toISOString().split('T')[0];
+        dateInput.value = formattedDate;
 
-// Função para formatar data como dd/mm/aaaa (para exibição)
-function formatDateForDisplay(dateStr) {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    });
-}
-
-// Atualiza o span com a data atual formatada (exibição no topo)
-function updateHeaderDate() {
-    const today = new Date();
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    if (currentDateElement) {
+        // Formatar e exibir a data atual no cabeçalho
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         currentDateElement.textContent = today.toLocaleDateString('pt-BR', options);
-    }
-}
-
-// Preenche o campo de data do formulário com a data de hoje
-function initializeFormDate() {
-    if (dateInput && !dateInput.value) {
-        dateInput.value = getTodayDate();
-    }
-}
-
-// Chama as funções ao carregar
-initializeFormDate();
-updateHeaderDate();
-
 
 
 // Verificar status da conexão
