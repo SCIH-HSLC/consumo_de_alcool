@@ -1,3 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle de Produtos Hospitalares</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+/* (O estilo permanece igual) */
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+<div class="logo">
+<div class="logo-icon">
+<i class="fas fa-hospital"></i>
+</div>
+<div class="logo-text">
+<h1>Controle de Produtos Hospitalares</h1>
+<p>Sistema de gestão de insumos e produtos de higiene</p>
+</div>
+</div>
+<div class="hospital-info">
+<!-- <p><i class="fas fa-map-marker-alt"></i> Hospital Municipal de Saúde</p> -->
+</div>
+<div class="status-indicator" id="status-indicator">
+<div class="status-dot" id="status-dot"></div>
+<span id="status-text">Online</span>
+<div class="spinner" id="spinner"></div>
+</div>
+</header>
+
+<div class="main-content">
+<div class="card">
+<h2 class="card-title"><i class="fas fa-calculator"></i> Controle de Produtos</h2>
+<form id="hygieneForm" class="form-card">
+<div class="form-group">
+<label for="product"><i class="fas fa-pump-soap hospital-icon"></i> Produto:</label>
+<select id="product" name="product" required>
+<option value="">Selecione um produto</option>
+<option value="SABONETE LÍQUIDO (500 ml)">SABONETE LÍQUIDO (500 ml)</option>
+<option value="SABONETE LIQUIDO CLOREX (1000ML)">SABONETE LIQUIDO CLOREX (1000ML)</option>
+<option value="ÁLCOOL EM GEL (700 ml)">ÁLCOOL EM GEL (700 ml)</option>
+<option value="ÁLCOOL PUMP (250 ml)">ÁLCOOL PUMP (250 ml)</option>
+<option value="ÁLCOOL ESPUMA (1000 ml)">ÁLCOOL ESPUMA (1000 ml)</option>
+<option value="ÁLCOOL PURELL (1200 ml)">ÁLCOOL PURELL (1200 ml)</option>
+<option value="ÁLCOOL ESPUMA (475 ml)">ÁLCOOL ESPUMA (475 ml)</option>
+</select>
+</div>
+
+<div class="form-group">
+<label for="sector"><i class="fas fa-building hospital-icon"></i> Setor:</label>
+<select id="sector" name="sector" required>
+<option value="">Selecione um setor</option>
+<option value="7º ANDAR - INTERNAÇÃO">7º ANDAR - INTERNAÇÃO</option>
+<option value="6º ANDAR - INTERNAÇÃO">6º ANDAR - INTERNAÇÃO</option>
+<option value="6º ANDAR - MATERNIDADE">6º ANDAR - MATERNIDADE</option>
+<option value="5º ANDAR - INTERNAÇÃO">5º ANDAR - INTERNAÇÃO</option>
+<option value="5º ANDAR - ONCOLOGIA">5º ANDAR - ONCOLOGIA</option>
+<option value="4º ANDAR - CEMED">4º ANDAR - CEMED</option>
+<option value="3º ANDAR - PEDIATRIA INTERNAÇÃO">3º ANDAR - PEDIATRIA INTERNAÇÃO</option>
+<option value="3º ANDAR - UTI PEDIATRICA">3º ANDAR - UTI PEDIATRICA</option>
+<option value="3º ANDAR - UTI NEONATAL">3º ANDAR - UTI NEONATAL</option>
+<option value="2º ANDAR CENTRO CIRURGICO">2º ANDAR CENTRO CIRURGICO</option>
+<option value="2º ANDAR CENTRO OBSTÉTRICO">2º ANDAR CENTRO OBSTÉTRICO</option>
+<option value="2º ANDAR - HOSPITAL DIA">2º ANDAR - HOSPITAL DIA</option>
+<option value="1º ANDAR ADULTO DML 01 – UTI">1º ANDAR ADULTO DML 01 – UTI</option>
+<option value="TÉRREO DML SADT">TÉRREO DML SADT</option>
+<option value="TÉRREO DML PSA">TÉRREO DML PSA</option>
+<option value="TÉRREO DML PSI">TÉRREO DML PSI</option>
+<option value="S1 DML 1 - MEDICINA DO TRABALHO">S1 DML 1 - MEDICINA DO TRABALHO</option>
+<option value="S1 DML 2 - MANUTENÇÃO">S1 DML 2 - MANUTENÇÃO</option>
+</select>
+</div>
+
+<div class="form-group">
+<label for="quantity"><i class="fas fa-boxes hospital-icon"></i> Quantidade:</label>
+<input type="number" id="quantity" name="quantity" min="1" value="1" placeholder="Quantidade" required>
+</div>
+
+<div class="form-group">
+<label for="date"><i class="fas fa-calendar-alt hospital-icon"></i> Data:</label>
+<input type="date" id="date" name="date" required>
+</div>
+
+<div class="form-group">
+<label for="registro-status"><i class="fas fa-info-circle hospital-icon"></i> Status do Registro:</label>
+<input type="text" id="registro-status" name="registro-status" value="Registrado" readonly style="background-color: #f9f9f9; font-weight: bold; color: #333;">
+</div>
+
+<div class="btn-container">
+<button id="save-btn" type="submit"><i class="fas fa-save"></i> Salvar Registro</button>
+<button id="update-btn" class="btn-edit" style="display:none;"><i class="fas fa-edit"></i> Atualizar</button>
+<button id="clear-btn" class="btn-clear" type="button"><i class="fas fa-trash-alt"></i> Limpar</button>
+<button id="cancel-edit-btn" class="btn-cancel" style="display:none;"><i class="fas fa-times"></i> Cancelar</button>
+<button id="offline-btn" class="btn-offline" type="button"><i class="fas fa-wifi"></i> Modo Offline</button>
+</div>
+
+<div class="stats-container">
+<div class="stat-card">
+<div class="stat-label">Total de Registros</div>
+<div class="stat-value" id="total-records">0</div>
+</div>
+<div class="stat-card">
+<div class="stat-label">Produtos Hoje</div>
+<div class="stat-value" id="today-records">0</div>
+</div>
+<div class="stat-card">
+<div class="stat-label">Enviados</div>
+<div class="stat-value" id="sent-records">0</div>
+</div>
+</div>
+</form>
+</div>
+
+<div class="card history-card">
+<div class="history-header">
+<h2 class="card-title"><i class="fas fa-history"></i> Histórico de Registros</h2>
+<div class="search-box">
+<input type="text" id="search-input" placeholder="Buscar por produto ou setor...">
+<button id="search-btn"><i class="fas fa-search"></i> Buscar</button>
+</div>
+</div>
+
+<div class="history-list" id="history-list">
+<!-- Histórico será carregado aqui -->
+</div>
+
+<div class="export-btn-container">
+<button id="export-btn" class="btn-export"><i class="fas fa-file-excel"></i> Exportar para Excel</button>
+</div>
+</div>
+</div>
+
+<footer>
+<p>Sistema de Controle de Produtos Hospitalares &copy; 2025 - Desenvolvido para o Hospital São Luiz Campinas</p>
+</footer>
+</div>
+
+<div class="notification" id="notification">
+<i class="fas fa-check-circle"></i>
+<span>Registro salvo com sucesso!</span>
+</div>
+
+<div class="confirmation-modal" id="confirmation-modal">
+<div class="modal-content">
+<i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #e74c3c; margin-bottom: 20px;"></i>
+<h3 style="margin-bottom: 15px;">Confirmar Exclusão</h3>
+<p>Você tem certeza que deseja excluir este registro?</p>
+<p style="font-weight: 600; margin: 15px 0;" id="item-to-delete"></p>
+<p>Esta ação não pode ser desfeita.</p>
+<div class="modal-buttons">
+<button id="confirm-delete-btn" class="btn-clear"><i class="fas fa-trash-alt"></i> Excluir</button>
+<button id="cancel-delete-btn" class="btn-cancel"><i class="fas fa-times"></i> Cancelar</button>
+</div>
+</div>
+</div>
+
 <script>
 // Elementos do DOM
 const saveBtn = document.getElementById('save-btn');
@@ -538,3 +699,6 @@ window.addEventListener('offline', () => {
     showNotification('Você está offline. Os registros serão salvos localmente.', 'warning');
 });
 </script>
+</body>
+</html>
+
