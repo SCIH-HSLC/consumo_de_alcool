@@ -549,16 +549,6 @@ font-size: 1.2rem;
 <div class="card">
 <h2 class="card-title"><i class="fas fa-calculator"></i> Controle de Produtos</h2>
 <form id="hygieneForm" class="form-card">
-  
- <div class="form-group">
- <label for="Contador">Contador</label>
- <select id="Contador" name="Contador" required>
- <option value="">Selecione o tipo</option>
- <option value="Enfermagem">Enfermagem</option>
- <option value="Brasanitas">Brasanitas</option>
- </select>
- </div>
-  
 <div class="form-group">
 <label for="product"><i class="fas fa-pump-soap hospital-icon"></i> Produto:</label>
 <select id="product" name="product" required>
@@ -663,6 +653,7 @@ font-size: 1.2rem;
 
 <footer>
 <div class="empty-history">
+<i class="fas fa-inbox"></i>
 <p>Sistema de Controle de Produtos Hospitalares &copy; 2025 - Desenvolvido para o Hospital São Luiz Campinas</p>
 </footer>
 </div>
@@ -716,15 +707,6 @@ const statusText = document.getElementById('status-text');
 const spinner = document.getElementById('spinner');
 const form = document.getElementById('hygieneForm');
 const statusField = document.getElementById("registro-status");
-document.addEventListener("DOMContentLoaded", function() {
-  const dateInput = document.getElementById("date");
-
-  // Preenche com a data atual apenas se o campo estiver vazio
-  if (!dateInput.value) {
-    const today = new Date().toISOString().split('T')[0];
-    dateInput.value = today;
-  }
-});
 
 // Variáveis de estado
 let currentEditId = null;
@@ -878,7 +860,7 @@ notification.classList.remove('show');
 // Salvar registro
 function saveRecord(e) {
 e.preventDefault();
-const contador = contadorSelect.value;
+
 const product = productSelect.value;
 const sector = sectorSelect.value;
 const quantity = quantityInput.value;
@@ -891,16 +873,15 @@ return;
 }
 
 const record = {
-  contador: produtoSelect.value,  // ou o valor correto do contador
-  product,
-  sector,
-  quantity,
-  date,
-  "registro-status": status,
-  id: Date.now(),
-  sent: false
+product,
+sector,
+quantity,
+        date,
+        date, // Usa a data do campo (pode ser alterada pelo usuário)
+"registro-status": status,
+id: Date.now(),
+sent: false
 };
-
 
 // Obter histórico atual ou criar novo array
 const history = JSON.parse(localStorage.getItem('productHistory')) || [];
@@ -940,12 +921,12 @@ headers: {
 'Content-Type': 'application/json'
 },
 body: JSON.stringify({
-  contador: record.contador,  
-  product: record.product,
-  sector: record.sector,
-  quantity: record.quantity,
-  date: record.date,
-  "registro-status": record["registro-status"]
+product: record.product,
+sector: record.sector,
+quantity: record.quantity,
+date: record.date,
+"registro-status": record["registro-status"]
+})
 });
 
 if (response.ok) {
@@ -992,7 +973,6 @@ const record = history.find(item => item.id === id);
 
 if (record) {
 // Preencher formulário com dados do registro
-contadorSelect.value = record.contador;
 productSelect.value = record.product;
 sectorSelect.value = record.sector;
 quantityInput.value = record.quantity;
@@ -1025,7 +1005,6 @@ const recordIndex = history.findIndex(item => item.id === currentEditId);
 
 if (recordIndex !== -1) {
 // Atualizar dados do registro
-history[recordIndex].contador = productSelect.value;
 history[recordIndex].product = productSelect.value;
 history[recordIndex].sector = sectorSelect.value;
 history[recordIndex].quantity = quantityInput.value;
