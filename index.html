@@ -706,6 +706,15 @@ const statusText = document.getElementById('status-text');
 const spinner = document.getElementById('spinner');
 const form = document.getElementById('hygieneForm');
 const statusField = document.getElementById("registro-status");
+document.addEventListener("DOMContentLoaded", function() {
+  const dateInput = document.getElementById("date");
+
+  // Preenche com a data atual apenas se o campo estiver vazio
+  if (!dateInput.value) {
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.value = today;
+  }
+});
 
 // Variáveis de estado
 let currentEditId = null;
