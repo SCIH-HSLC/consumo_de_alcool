@@ -878,7 +878,7 @@ notification.classList.remove('show');
 // Salvar registro
 function saveRecord(e) {
 e.preventDefault();
-
+const contador = contadorSelect.value;
 const product = productSelect.value;
 const sector = sectorSelect.value;
 const quantity = quantityInput.value;
@@ -939,6 +939,7 @@ headers: {
 'Content-Type': 'application/json'
 },
 body: JSON.stringify({
+contador: record.contador,  
 product: record.product,
 sector: record.sector,
 quantity: record.quantity,
@@ -991,6 +992,7 @@ const record = history.find(item => item.id === id);
 
 if (record) {
 // Preencher formulário com dados do registro
+contadorSelect.value = record.contador;
 productSelect.value = record.product;
 sectorSelect.value = record.sector;
 quantityInput.value = record.quantity;
@@ -1023,6 +1025,7 @@ const recordIndex = history.findIndex(item => item.id === currentEditId);
 
 if (recordIndex !== -1) {
 // Atualizar dados do registro
+history[recordIndex].contador = productSelect.value;
 history[recordIndex].product = productSelect.value;
 history[recordIndex].sector = sectorSelect.value;
 history[recordIndex].quantity = quantityInput.value;
