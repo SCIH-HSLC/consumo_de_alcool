@@ -891,15 +891,16 @@ return;
 }
 
 const record = {
-product,
-sector,
-quantity,
-        date,
-        date, // Usa a data do campo (pode ser alterada pelo usuário)
-"registro-status": status,
-id: Date.now(),
-sent: false
+  contador: produtoSelect.value,  // ou o valor correto do contador
+  product,
+  sector,
+  quantity,
+  date,
+  "registro-status": status,
+  id: Date.now(),
+  sent: false
 };
+
 
 // Obter histórico atual ou criar novo array
 const history = JSON.parse(localStorage.getItem('productHistory')) || [];
@@ -939,13 +940,12 @@ headers: {
 'Content-Type': 'application/json'
 },
 body: JSON.stringify({
-contador: record.contador,  
-product: record.product,
-sector: record.sector,
-quantity: record.quantity,
-date: record.date,
-"registro-status": record["registro-status"]
-})
+  contador: record.contador,  
+  product: record.product,
+  sector: record.sector,
+  quantity: record.quantity,
+  date: record.date,
+  "registro-status": record["registro-status"]
 });
 
 if (response.ok) {
