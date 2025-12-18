@@ -522,6 +522,26 @@ font-size: 1.2rem;
 <div class="container">
 
 <header>
+  <div class="logo">
+    <div class="logo-icon">
+      <i class="fas fa-hospital"></i>
+    </div>
+    <div class="logo-text">
+      <h1>Controle de Produtos Hospitalares</h1>
+      <p>Sistema de gestão de insumos e produtos de higiene</p>
+    </div>
+  </div>
+
+  <div class="status-indicator" id="status-indicator">
+    <div class="status-dot" id="status-dot"></div>
+    <span id="status-text">Online</span>
+    <div class="spinner" id="spinner"></div>
+  </div>
+</header>
+<body>
+<div class="container">
+
+<header>
 <div class="logo">
 <div class="logo-icon">
 <i class="fas fa-hospital"></i>
@@ -627,7 +647,7 @@ font-size: 1.2rem;
 </form>
 </div>
 
-<div class="card history-card">
+  <div class="card history-card">
 <div class="history-header">
 <h2 class="card-title"><i class="fas fa-history"></i> Histórico de Registros</h2>
 <div class="search-box">
@@ -1223,4 +1243,3 @@ showNotification('Você está offline. Os registros serão salvos localmente.', 
 });
 </script>
 </body>
-</html>
