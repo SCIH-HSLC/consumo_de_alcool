@@ -684,14 +684,15 @@ const clearBtn = document.getElementById('clear-btn');
 const cancelEditBtn = document.getElementById('cancel-edit-btn');
 const searchBtn = document.getElementById('search-btn');
 const exportBtn = document.getElementById('export-btn');
-const offlineBtn = document.getElementById('offline-btn');
+// CORREÇÃO: Removida referência ao offlineBtn que não existe no HTML para evitar erro
 const productSelect = document.getElementById('product');
 const sectorSelect = document.getElementById('sector');
 const quantityInput = document.getElementById('quantity');
 const dateInput = document.getElementById('date');
 const historyList = document.getElementById('history-list');
 const notification = document.getElementById('notification');
-const currentDateElement = document.getElementById('current-date');
+// CORREÇÃO: Adicionada verificação de segurança para o elemento de data do cabeçalho
+const currentDateElement = document.getElementById('current-date'); 
 const searchInput = document.getElementById('search-input');
 const totalRecordsElement = document.getElementById('total-records');
 const todayRecordsElement = document.getElementById('today-records');
