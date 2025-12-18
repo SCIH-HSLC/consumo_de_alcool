@@ -991,9 +991,6 @@ saveBtn.style.display = 'none';
 updateBtn.style.display = 'flex';
 cancelEditBtn.style.display = 'flex';
 
-// Destacar item sendo editado
-displayHistory(history);
-
 showNotification('Modo de edição ativado. Atualize os dados conforme necessário.', 'warning');
 }
 }
@@ -1002,23 +999,6 @@ showNotification('Modo de edição ativado. Atualize os dados conforme necessár
 function updateRecord() {
 const history = JSON.parse(localStorage.getItem('productHistory')) || [];
 const recordIndex = history.findIndex(item => item.id === currentEditId);
-
-if (recordIndex !== -1) {
-// Atualizar dados do registro
-history[recordIndex].product = productSelect.value;
-history[recordIndex].sector = sectorSelect.value;
-history[recordIndex].quantity = quantityInput.value;
-        history[recordIndex].date = dateInput.value;
-        history[recordIndex].date = dateInput.value; // Mantém a data que estava no campo (original ou alterada)
-history[recordIndex]["registro-status"] = "Atualizado"; // Forçar status Atualizado
-history[recordIndex].sent = false; // Marcar como não enviado após atualização
-
-// Salvar no localStorage
-localStorage.setItem('productHistory', JSON.stringify(history));
-
-// Atualizar exibição
-updateStatistics(history);
-displayHistory(history);
 
 // Mostrar notificação
 showNotification('Registro atualizado com sucesso!');
